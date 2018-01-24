@@ -1,0 +1,23 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Roland Fehr mld@diefehrs.de
+
+Project's homepage:          http://www.minidvblinux.de
+
+Latest version available at: http://www.minidvblinux.de
+
+See the file COPYING for license information.
+
+Description:
+
+  Output device that uses gstreamer
+
+
+Requirements:
+
+  vdr-2.2.0 or later.
+  
+  libgstreamer1.0-dev
+  libglib2.0-dev
+
+  
