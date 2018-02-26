@@ -40,7 +40,7 @@ static Display *dpy = NULL;
 static Display *overlay_dpy = NULL; 
 static int dpy_width = 0;
 static int dpy_height = 0;
-static GstPipeline *pipeline = NULL;
+static GstElement *pipeline = NULL;
 static GstElement *appsrc = NULL;
 static GstAppSrc *local_appsrc = NULL;
 
@@ -268,8 +268,8 @@ class cGstreamerOsd : public cOsd {
         attr.border_pixel = 0;
 
         
-        overlay_win = XCreateWindow(dpy, DefaultRootWindow(dpy), 0 ,0, 1280, 720, 0, 24, InputOutput, visual, CWBackPixel | CWColormap | CWBorderPixel, &attr);
-        //overlay_win = XCreateWindow(dpy, win, 0 ,0, 1280, 720, 0, 24, InputOutput, visual, CWBackPixel | CWColormap | CWBorderPixel, &attr);
+        //overlay_win = XCreateWindow(dpy, DefaultRootWindow(dpy), 0 ,0, 1280, 720, 0, 24, InputOutput, visual, CWBackPixel | CWColormap | CWBorderPixel, &attr);
+        overlay_win = XCreateWindow(dpy, win, 0 ,0, 1280, 720, 0, 24, InputOutput, visual, CWBackPixel | CWColormap | CWBorderPixel, &attr);
         
         overlay_gc = XCreateGC(dpy, overlay_win, 0, 0);
 
@@ -280,7 +280,7 @@ class cGstreamerOsd : public cOsd {
         
         //XSetForeground(dpy, gc, 0);
         
-        double alpha = 0.4;
+        double alpha = 0.8;
         unsigned long opacity = (unsigned long)(0xFFFFFFFFul * alpha);
         Atom XA_NET_WM_WINDOW_OPACITY = XInternAtom(dpy, "_NET_WM_WINDOW_OPACITY", False);
 
@@ -289,7 +289,7 @@ class cGstreamerOsd : public cOsd {
 
         XChangeProperty( dpy, overlay_win, 
                          XA_NET_WM_WINDOW_OPACITY,
-                         XA_CARDINAL, 32, PropModeReplace, (unsigned char*)&opacity,1) ;
+                         XA_CARDINAL, 32, PropModeReplace, (unsigned char*)&opacity,1L) ;
 
 
 /*
@@ -545,6 +545,7 @@ public:
       
       remove(TEMP_PATH);
       g_printerr("GstreamerDevice() : cDevice() \n");	       
+      g_printerr("gstreamer Version %s \n" ,gst_version_string());	       
     }// end of method
     
     virtual ~cGstreamerDevice() 
@@ -566,10 +567,10 @@ public:
 	{
 	 if( live_stream_is_runnig)
 	 {
-           //gst_element_set_state (GST_ELEMENT(pipeline), GST_STATE_NULL);
 	   gst_element_set_state (appsrc, GST_STATE_NULL);
-           ilive_stream_count = 0;
-           live_stream_is_runnig = FALSE;
+       gst_element_set_state (pipeline, GST_STATE_NULL);
+       ilive_stream_count = 0;
+       live_stream_is_runnig = FALSE;
 	   remove(TEMP_PATH);
 	   g_printerr("SetPlayMode (%d) live_stream_is_runnig, ilive_stream_count %d\n",PlayMode, ilive_stream_count);
       
@@ -579,11 +580,10 @@ public:
 	
 	case 1:
         {
-          //StartReplay();
-          //gst_element_set_state (GST_ELEMENT(pipeline), GST_STATE_NULL);
-	  gst_element_set_state (appsrc, GST_STATE_NULL);
-	  g_printerr("SetPlayMode (%d) GST_STATE_NULL\n",PlayMode);
-	  break;
+          gst_element_set_state (appsrc, GST_STATE_NULL);
+          gst_element_set_state (pipeline, GST_STATE_NULL);
+	      g_printerr("SetPlayMode (%d) GST_STATE_NULL\n",PlayMode);
+	      break;
         }
       }
       
@@ -748,8 +748,9 @@ public:
        g_printerr(local_uri);
        g_printerr("\n");
        
-       //gst_element_set_state (GST_ELEMENT(pipeline), GST_STATE_PLAYING); 
        gst_element_set_state (appsrc, GST_STATE_PLAYING); 
+       //gst_element_set_state (pipeline, GST_STATE_PLAYING); 
+       
        g_printerr("StartReplay() \n");
        
        if (error)
@@ -801,16 +802,6 @@ public:
     
     //uri = g_strdup_printf ("playbin uri=file://%s %s", TEMP_PATH, attrib);
     uri = g_strdup_printf ("playbin uri=file://%s", TEMP_PATH);
-    
-    /*
-     * 
-    pipeline = GST_PIPELINE(gst_parse_launch(uri,&error));
-    bus = gst_pipeline_get_bus(GST_PIPELINE(pipeline));
-    gst_bus_set_sync_handler(bus, (GstBusSyncHandler) create_window, pipeline, NULL);
-    gst_bus_add_watch(bus, (GstBusFunc)handle_message, NULL);
-    gst_element_set_state(GST_ELEMENT(pipeline), GST_STATE_PLAYING);
-    */
-    
    
     appsrc = gst_element_factory_make("playbin", "playbin");
     //g_object_set(appsrc, "uri", "https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_cropped_multilingual.webm", NULL);
@@ -818,17 +809,34 @@ public:
     g_object_set(appsrc, "uri", local_uri, NULL);
     g_printerr("cPluginGstreamerdevice:ProcessArgs(): g_object_set uri %s \n", local_uri); 
 
-    /*
-    appsrc = gst_element_factory_make("filesrc", "filesrc");
-    //g_object_set(appsrc, "uri", "https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_cropped_multilingual.webm", NULL);
-    local_uri = g_strdup_printf ("%s", TEMP_PATH);
-    g_object_set(appsrc, "location", local_uri, NULL);
-    g_printerr("cPluginGstreamerdevice:ProcessArgs(): g_object_set uri %s \n", local_uri); 
-   */
-    
     bus = gst_element_get_bus(appsrc);
     gst_bus_set_sync_handler(bus, (GstBusSyncHandler) create_window, appsrc, NULL);
     gst_bus_add_watch(bus, (GstBusFunc)handle_message, NULL);
+
+
+    
+    
+    pipeline = gst_pipeline_new ("my_pipeline");
+    local_uri = g_strdup_printf ("%s", TEMP_PATH);
+    GstElement *filesrc  = gst_element_factory_make ("filesrc", "my_filesource");
+    //GstElement *sink     = gst_element_factory_make ("autovideosink", "autovideosink");
+    GstElement *sink     = gst_element_factory_make ("vaapisink", "sink");
+    
+    GstElement *decoder  = gst_element_factory_make ("decodebin", "my_decoder");
+     
+    g_object_set (G_OBJECT (filesrc), "location", local_uri, NULL);
+    gst_bin_add_many (GST_BIN (pipeline), filesrc, decoder, sink, NULL);
+    /* link everything together */
+    if (!gst_element_link_many (filesrc, decoder, sink, NULL)) {
+      g_print ("Failed to link one or more elements!\n");
+      return -1;
+    }
+    
+    /*
+    bus = gst_element_get_bus(pipeline);
+    gst_bus_set_sync_handler(bus, (GstBusSyncHandler) create_window, pipeline, NULL);
+    gst_bus_add_watch(bus, (GstBusFunc)handle_message, NULL);
+*/
     
     
     /* Set flags to show Audio and Video, but ignore Subtitles */
@@ -838,7 +846,6 @@ public:
     flags &= ~GST_PLAY_FLAG_TEXT;
     g_object_set(appsrc, "flags", flags, NULL);
     
-    //gst_element_set_state(appsrc, GST_STATE_PLAYING);
     
     /* enable Hardwaredecoding 'vaapidecode' */
     
