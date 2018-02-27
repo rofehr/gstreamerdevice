@@ -687,7 +687,7 @@ public:
       }
 
       
-      if( ilive_stream_count < 15000)
+      if( ilive_stream_count < 30000)
       {
         ilive_stream_count++;
 	return Length;
