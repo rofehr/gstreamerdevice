@@ -311,7 +311,7 @@ class cGstreamerOsd : public cOsd {
         
         // Make Window fullscreen
         
-        //XSetForeground(dpy, gc, whiteColor);
+        XSetForeground(dpy, gc, whiteColor);
         
         XCompositeRedirectSubwindows(dpy, root, CompositeRedirectAutomatic);
         
@@ -330,10 +330,10 @@ class cGstreamerOsd : public cOsd {
             xev.xclient.data.l[1] = wm_fullscreen;
             xev.xclient.data.l[2] = 0;
 
-/*
+
         XSendEvent (dpy, DefaultRootWindow(dpy), False,
                         SubstructureRedirectMask | SubstructureNotifyMask, &xev);
-*/
+
         xev.xclient.window = overlay_win;
 
         XSendEvent (dpy, DefaultRootWindow(dpy), False,
