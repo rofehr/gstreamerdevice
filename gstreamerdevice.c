@@ -330,15 +330,13 @@ class cGstreamerOsd : public cOsd {
             xev.xclient.data.l[1] = wm_fullscreen;
             xev.xclient.data.l[2] = 0;
 
-
         XSendEvent (dpy, DefaultRootWindow(dpy), False,
                         SubstructureRedirectMask | SubstructureNotifyMask, &xev);
-
         xev.xclient.window = overlay_win;
-
+/*
         XSendEvent (dpy, DefaultRootWindow(dpy), False,
                         SubstructureRedirectMask | SubstructureNotifyMask, &xev);
-          
+*/          
         XFlush(dpy);
 
         
