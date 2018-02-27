@@ -568,7 +568,7 @@ public:
 	 if( live_stream_is_runnig)
 	 {
 	   gst_element_set_state (appsrc, GST_STATE_NULL);
-       gst_element_set_state (pipeline, GST_STATE_NULL);
+       //gst_element_set_state (pipeline, GST_STATE_NULL);
        ilive_stream_count = 0;
        live_stream_is_runnig = FALSE;
 	   remove(TEMP_PATH);
@@ -581,7 +581,7 @@ public:
 	case 1:
         {
           gst_element_set_state (appsrc, GST_STATE_NULL);
-          gst_element_set_state (pipeline, GST_STATE_NULL);
+          //gst_element_set_state (pipeline, GST_STATE_NULL);
 	      g_printerr("SetPlayMode (%d) GST_STATE_NULL\n",PlayMode);
 	      break;
         }
@@ -815,28 +815,27 @@ public:
 
 
     
-    
+    /*
     pipeline = gst_pipeline_new ("my_pipeline");
     local_uri = g_strdup_printf ("%s", TEMP_PATH);
     GstElement *filesrc  = gst_element_factory_make ("filesrc", "my_filesource");
     //GstElement *sink     = gst_element_factory_make ("autovideosink", "autovideosink");
-    GstElement *sink     = gst_element_factory_make ("vaapisink", "sink");
+    GstElement *sink     = gst_element_factory_make ("autovideosink", "sink");
     
     GstElement *decoder  = gst_element_factory_make ("decodebin", "my_decoder");
      
     g_object_set (G_OBJECT (filesrc), "location", local_uri, NULL);
     gst_bin_add_many (GST_BIN (pipeline), filesrc, decoder, sink, NULL);
-    /* link everything together */
     if (!gst_element_link_many (filesrc, decoder, sink, NULL)) {
       g_print ("Failed to link one or more elements!\n");
       return -1;
     }
-    
+    */
     /*
     bus = gst_element_get_bus(pipeline);
     gst_bus_set_sync_handler(bus, (GstBusSyncHandler) create_window, pipeline, NULL);
     gst_bus_add_watch(bus, (GstBusFunc)handle_message, NULL);
-*/
+    */
     
     
     /* Set flags to show Audio and Video, but ignore Subtitles */
