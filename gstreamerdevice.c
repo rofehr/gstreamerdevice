@@ -335,10 +335,10 @@ class cGstreamerOsd : public cOsd {
                         SubstructureRedirectMask | SubstructureNotifyMask, &xev);
 */
         xev.xclient.window = overlay_win;
-/*
+
         XSendEvent (dpy, DefaultRootWindow(dpy), False,
                         SubstructureRedirectMask | SubstructureNotifyMask, &xev);
-*/          
+          
         XFlush(dpy);
 
         
