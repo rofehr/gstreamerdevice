@@ -329,7 +329,6 @@ class cGstreamerOsd : public cOsd {
             xev.xclient.data.l[0] = 1;
             xev.xclient.data.l[1] = wm_fullscreen;
             xev.xclient.data.l[2] = 0;
-
         XSendEvent (dpy, DefaultRootWindow(dpy), False,
                         SubstructureRedirectMask | SubstructureNotifyMask, &xev);
         xev.xclient.window = overlay_win;
@@ -428,9 +427,31 @@ class cGstreamerOsd : public cOsd {
         img->data = (char*)pm->Data();
         
         Pixmap pixmap = XCreatePixmap(dpy, overlay_win, pm->ViewPort().Width(), pm->ViewPort().Height(), depth);
+        
+        //XPutImage(dpy, pixmap, overlay_gc, img, 0, 0, 0, 0,  pm->ViewPort().Width(),  pm->ViewPort().Height());
+        
+        
+        int w = pm->ViewPort().Width();
+        int h = pm->ViewPort().Height();
+        int X = pm->ViewPort().X();
+        int Y = pm->ViewPort().Y();
+        int T = Top();
+        int L = Left();
+        
+        g_printerr("XPutImage (with %d), (height %d), (X %d), (Y %d), (T %d), (L %d) \n", w, h, X, Y, T, L );
+
         XPutImage(dpy, pixmap, overlay_gc, img, 0, 0, 0, 0,  pm->ViewPort().Width(),  pm->ViewPort().Height());
+
         
+        XCopyArea(dpy, pixmap, overlay_win,overlay_gc, 
+                  0 ,0,
+                  pm->ViewPort().Width(), pm->ViewPort().Height(),
+                  L+X, T+Y);
         
+        XFlush(dpy);
+
+        
+        /*
         Picture picture = XRenderCreatePicture(
                         dpy , pixmap,
                         XRenderFindStandardFormat(dpy, PictStandardRGB24), 0, 0);
@@ -438,7 +459,7 @@ class cGstreamerOsd : public cOsd {
         Picture win_picture = XRenderCreatePicture(
                         dpy , pixmap,
                         XRenderFindStandardFormat(dpy, PictStandardRGB24), 0, 0);
-
+        */
         /*         
         XRenderComposite( dpy, PictOpSrc, picture, None,
                           pixmap, 0, 0, 0, 0, 0, 0, pm->ViewPort().Width(), pm->ViewPort().Height() );
@@ -457,12 +478,12 @@ class cGstreamerOsd : public cOsd {
         
         XFlush(dpy);
        */
-
+/*
         XCopyArea(dpy, pixmap, overlay_win,overlay_gc, 
                   0 ,0,
                   pm->ViewPort().Width(), pm->ViewPort().Height(),
                   pm->DrawPort().X(), pm->DrawPort().Y());
-        
+*/        
 
         int shape_event_base, shape_error_base;
         bool ret = XShapeQueryExtension (dpy, &shape_event_base, &shape_error_base);
@@ -687,7 +708,7 @@ public:
       }
 
       
-      if( ilive_stream_count < 30000)
+      if( ilive_stream_count < 15000)
       {
         ilive_stream_count++;
 	return Length;
