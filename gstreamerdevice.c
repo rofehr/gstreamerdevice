@@ -84,6 +84,7 @@ struct _Data
   GstElement *src;
   GstElement *id;
   GstElement *sink;
+  GstElement *gdkpixbufoverlay;	
 };
 
 Data s_data;
