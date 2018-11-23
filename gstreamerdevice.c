@@ -37,12 +37,12 @@
 static XVisualInfo vinfo;
 static Visual *visual;
 static Display *dpy = NULL; 
-static Display *overlay_dpy = NULL; 
-static int dpy_width = 0;
-static int dpy_height = 0;
-static GstElement *pipeline = NULL;
+//static Display *overlay_dpy = NULL; 
+//static int dpy_width = 0;
+//static int dpy_height = 0;
+//static GstElement *pipeline = NULL;
 static GstElement *appsrc = NULL;
-static GstAppSrc *local_appsrc = NULL;
+//static GstAppSrc *local_appsrc = NULL;
 
 static GstBus *bus = NULL;
 static GError *error = NULL;
@@ -51,12 +51,12 @@ static  gchar *local_uri =NULL;
 static int blackColor;
 static int whiteColor;
 
-static int iDefault_Screen;
-static Window win = NULL;
-static Window root = NULL;
-static Window overlay_win = NULL;
-static cairo_surface_t *surf;
-static cairo_t *cr;
+//static int iDefault_Screen;
+static Window win = 0;
+static Window root = 0;
+static Window overlay_win = 0;
+//static cairo_surface_t *surf;
+//static cairo_t *cr;
 static GC gc;
 static GC overlay_gc;
 
@@ -76,9 +76,8 @@ static int ilive_stream_count = 0;
  #define TEMP_PATH "/var/cache/dummy.ts"
 #endif
  
-
-typedef struct _Data Data;
-struct _Data
+/*
+struct Data
 {
   GstElement *pipe;
   GstElement *src;
@@ -88,7 +87,7 @@ struct _Data
 };
 
 Data s_data;
-
+*/
 
 
 
@@ -112,7 +111,10 @@ static gboolean handle_message(GstBus *bus, GstMessage *msg)
      case GST_MESSAGE_STATE_CHANGED:
       g_printerr("GST_MESSAGE_STATE_CHANGED \n");
      break;
+     default:
+     break;
    };
+   return 0;
 }
 
 static GstBusSyncReply create_window(GstBus *bus, GstMessage *message, GstPipeline *pipeline)
@@ -136,7 +138,7 @@ static GstBusSyncReply create_window(GstBus *bus, GstMessage *message, GstPipeli
  * open the X11 Windows
  * 
 */
-static int open_display(const char *video_port)
+static void open_display(const char *video_port)
 {
   
   if(video_port && *video_port)
@@ -222,7 +224,7 @@ class cGstreamerOsd : public cOsd {
         blackColor = BlackPixel( dpy, DefaultScreen(dpy));
         whiteColor = WhitePixel( dpy, DefaultScreen(dpy));
         
-        if ( win == NULL)
+        if ( win == 0)
         {  
             
         root = RootWindow(dpy,DefaultScreen(dpy));
@@ -557,7 +559,7 @@ public:
     }// end of method
    */
    
-    Data data;
+    //Data data;
   
     cGstreamerDevice() : cDevice() 
     {
@@ -605,6 +607,8 @@ public:
 	      g_printerr("SetPlayMode (%d) GST_STATE_NULL\n",PlayMode);
 	      break;
         }
+    default:
+      break;
       }
       
       //g_printerr("SetPlayMode (%d)\n",PlayMode);
@@ -699,7 +703,7 @@ public:
       
       //g_printerr("PlayTs \n");
 
-      int pid = TsPid(Data);  
+      //int pid = TsPid(Data);  
         
       FILE *fd = fopen(TEMP_PATH,"a+");
       if(fd != NULL)
@@ -794,7 +798,7 @@ public:
 
 static const char *VERSION        = "0.0.1";
 static const char *DESCRIPTION    = "gstreamer Output device";
-static const char *MAINMENUENTRY  = "gstreamerdevice";
+//static const char *MAINMENUENTRY  = "gstreamerdevice";
 
 class cPluginGstreamerdevice : public cPlugin {
 private:
@@ -818,7 +822,7 @@ public:
     open_display("");
     gst_init (&argc, &argv);
 
-    gchar *attrib = " ! tsparse ! video/x-h264 ! h264parse !avdec_h264 ! x264enc ! vaapidecode ! vaapisink";
+    //const gchar *attrib = " ! tsparse ! video/x-h264 ! h264parse !avdec_h264 ! x264enc ! vaapidecode ! vaapisink";
     
     //uri = g_strdup_printf ("playbin uri=file://%s %s", TEMP_PATH, attrib);
     uri = g_strdup_printf ("playbin uri=file://%s", TEMP_PATH);
