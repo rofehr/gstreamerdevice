@@ -880,7 +880,7 @@ public:
     factory = gst_element_factory_find("vaapidecode");
     if(!factory)
        g_printerr("cPluginGstreamerdevice:ProcessArgs(): factory is null \n"); 	  
-    gst_plugin_feature_set_rank(GST_PLUGIN_FEATURE(factory), GST_RANK_PRIMARY + 1);  
+    gst_plugin_feature_set_rank(GST_PLUGIN_FEATURE(factory), GST_RANK_PRIMARY - 1);  
     
 
     XFlush(dpy);
