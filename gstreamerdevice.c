@@ -46,14 +46,27 @@ static int blackColor;
 static int whiteColor;
 
 static Window win = 0;
-static Window root = 0;
-static Window overlay_win = 0;
+static Window glX_win = 0;
+//static Window overlay_win = 0;
 static GC gc;
-static GC overlay_gc;
+//static GC overlay_gc;
 
 // Global Defines
 static bool live_stream_is_runnig = FALSE;
 static int ilive_stream_count = 0;
+
+
+static int VisDataMain[] = {
+		GLX_RENDER_TYPE, GLX_RGBA_BIT,
+		GLX_DRAWABLE_TYPE, GLX_WINDOW_BIT,
+		GLX_DOUBLEBUFFER, True,
+		GLX_RED_SIZE, 8,
+		GLX_GREEN_SIZE, 8,
+		GLX_BLUE_SIZE, 8,
+		GLX_ALPHA_SIZE, 8,
+		GLX_DEPTH_SIZE, 16,
+		None
+};
 
 
 #define CHUNK_SIZE 4096
@@ -66,20 +79,6 @@ static int ilive_stream_count = 0;
 #else
 #define TEMP_PATH "/var/cache/dummy.ts"
 #endif
-
-/*
-struct Data
-{
-  GstElement *pipe;
-  GstElement *src;
-  GstElement *id;
-  GstElement *sink;
-  GstElement *gdkpixbufoverlay;
-};
-
-Data s_data;
- */
-
 
 
 /* playbin flags */
@@ -153,17 +152,19 @@ static void open_display(const char *display_name = NULL)
 
 
 class cGstreamerOsd : public cOsd {
+
+   	
 public:
 	
-	cOsdgst Osdgst;
-	
+    cOsdgst *Osdgst;
+    
 	void SetActive(bool on)
 	{
 		cOsd::SetActive(on);
 	}// end of method
 	cGstreamerOsd(int Left, int Top, uint Level) : cOsd(Left, Top, Level)
 	{
-		Osdgst.CreateWindow();
+        Osdgst = new cOsdgst(Left,  Top,  Level);
 		
 		if( dpy != NULL)
 		{
@@ -171,8 +172,6 @@ public:
 
 			if ( win == 0)
 			{
-
-				root = RootWindow(dpy, DefaultScreen(dpy));
 
 				XSetWindowAttributes attr;
 				XVisualInfo *visual_list;
@@ -182,18 +181,8 @@ public:
 
 
 				nxvisuals = 0;
-				visual_template.screen = DefaultScreen(dpy);visual_list = XGetVisualInfo (dpy, VisualScreenMask, &visual_template, &nxvisuals);
-
-				for (i = 0; i < nxvisuals; ++i)
-				{
-					printf("  %3d: visual 0x%lx class %d (%s) depth %d\n",
-							i,
-							visual_list[i].visualid,
-							visual_list[i].c_class,
-							visual_list[i].c_class == TrueColor ? "TrueColor" : "unknown",
-									visual_list[i].depth);
-
-				}
+				visual_template.screen = DefaultScreen(dpy);
+				visual_list = XGetVisualInfo (dpy, VisualScreenMask, &visual_template, &nxvisuals);
 
 				if (!XMatchVisualInfo(dpy, XDefaultScreen(dpy), 24, TrueColor, &vinfo))
 				{
@@ -202,20 +191,41 @@ public:
 
 				visual = vinfo.visual;
 
-				//attr.background_pixel = BlackPixel(dpy,DefaultScreen(dpy));
 				attr.background_pixel = 0;
 				attr.colormap = XCreateColormap(dpy, XDefaultRootWindow(dpy), visual, AllocNone);
 				attr.border_pixel = 0;
 
-				win = XCreateWindow(dpy, DefaultRootWindow(dpy), Left ,Top, 1280, 720, 0, 24, InputOutput, visual, CWBackPixel | CWColormap | CWBorderPixel, &attr);
+				win = XCreateWindow(dpy, DefaultRootWindow(dpy), 0 ,0, 1280, 720, 0, 24, InputOutput, visual, CWBackPixel | CWColormap | CWBorderPixel, &attr);
 				gc = XCreateGC(dpy, win, 0, NULL);
+                
+				XMapWindow(dpy, win);
+				XSync(dpy, false);
+				XFlush(dpy);
 
+                
+                Atom wm_state = XInternAtom(dpy, "_NET_WM_STATE", true);
+				Atom wm_fullscreen = XInternAtom(dpy, "_NET_WM_STATE_FULLSCREEN", true);
+				XEvent xev;
+				memset(&xev, 0, sizeof(xev));
+				xev.type = ClientMessage;
+				xev.xclient.window = win;
+				xev.xclient.message_type = wm_state;
+				xev.xclient.format = 32;
+				xev.xclient.data.l[0] = 1;
+				xev.xclient.data.l[1] = wm_fullscreen;
+				xev.xclient.data.l[2] = 0;
+				XSendEvent (dpy, DefaultRootWindow(dpy)
+						, False,
+						SubstructureRedirectMask | SubstructureNotifyMask, &xev);
+				xev.xclient.window = win;
+				XFlush(dpy);
+                
+
+/*                
 				attr.background_pixel = 0x80ffffff;
 				attr.colormap = XCreateColormap(dpy, XDefaultRootWindow(dpy), visual, AllocNone);
 				attr.border_pixel = 0;
 
-
-				//overlay_win = XCreateWindow(dpy, DefaultRootWindow(dpy), 0 ,0, 1280, 720, 0, 24, InputOutput, visual, CWBackPixel | CWColormap | CWBorderPixel, &attr);
 				overlay_win = XCreateWindow(dpy, win, 0 ,0, 1280, 720, 0, 24, InputOutput, visual, CWBackPixel | CWColormap | CWBorderPixel, &attr);
 
 				overlay_gc = XCreateGC(dpy, overlay_win, 0, 0);
@@ -255,11 +265,10 @@ public:
 				XCompositeRedirectSubwindows(dpy, root, CompositeRedirectAutomatic);
 
 				XFlush(dpy);
+
 				Atom wm_state = XInternAtom(dpy, "_NET_WM_STATE", true);
 				Atom wm_fullscreen = XInternAtom(dpy, "_NET_WM_STATE_FULLSCREEN", true);
-
 				XEvent xev;
-
 				memset(&xev, 0, sizeof(xev));
 				xev.type = ClientMessage;
 				xev.xclient.window = win;
@@ -280,10 +289,12 @@ public:
 				XMapRaised(dpy, win);
 
 				XMapWindow(dpy, win);
-
+*/
 
 			}
 		}
+        
+        Osdgst->CreateWindow(dpy);
 
 		g_printerr("cGstreamerOsd(int Left, int Top, uint Level) : cOsd(Left, Top, Level) \n");
 	} // end of method
@@ -291,8 +302,10 @@ public:
 	~cGstreamerOsd()
 	{
 		SetActive(false);
-		XUnmapWindow(dpy, overlay_win);
-		XClearWindow(dpy, overlay_win);
+        
+        delete(Osdgst); 
+        Osdgst = NULL;
+        
 		XFlush(dpy);
 
 		g_printerr("~cGstreamerOsd() \n");
@@ -322,7 +335,6 @@ public:
 
 	void Flush(void)
 	{
-        
 		cPixmapMemory *pm;
 
 		if(!Active())
@@ -335,107 +347,182 @@ public:
 			return;
 		}
 
-		XMapWindow(dpy, overlay_win);
 
 		LOCK_PIXMAPS;
 		while ((pm = (dynamic_cast < cPixmapMemory * >(RenderPixmaps()))))
 		{
 
-			int depth = 24; // works fine with depth = 24
-			int bitmap_pad = 32;// 32 for 24 and 32 bpp, 16, for 15&16
-			int bytes_per_line = 0;// number of bytes in the client image between the start of one
-
-			unsigned char *image32=(unsigned char *)malloc(pm->ViewPort().Width()*pm->ViewPort().Height()*4);
-
-			XImage *img = XCreateImage(dpy, vinfo.visual, depth, ZPixmap, 0, (char*)image32, pm->ViewPort().Width(), pm->ViewPort().Height(), bitmap_pad, bytes_per_line);
-
-			img->data = (char*)pm->Data();
-
-			Pixmap pixmap = XCreatePixmap(dpy, overlay_win, pm->ViewPort().Width(), pm->ViewPort().Height(), depth);
-
-
-			int w = pm->ViewPort().Width();
-			int h = pm->ViewPort().Height();
-			int X = pm->ViewPort().X();
-			int Y = pm->ViewPort().Y();
-			int T = Top();
-			int L = Left();
-
-			g_printerr("XPutImage (with %d), (height %d), (X %d), (Y %d), (T %d), (L %d) \n", w, h, X, Y, T, L );
-
-			XPutImage(dpy, pixmap, overlay_gc, img, 0, 0, 0, 0, pm->ViewPort().Width(), pm->ViewPort().Height());
-
-
-			XCopyArea(dpy, pixmap, overlay_win,overlay_gc,
-					0 ,0,
-					pm->ViewPort().Width(), pm->ViewPort().Height(),
-					L+X, T+Y);
-
-			XFlush(dpy);
-
-
-			/*
-        Picture picture = XRenderCreatePicture(
-                        dpy , pixmap,
-                        XRenderFindStandardFormat(dpy, PictStandardRGB24), 0, 0);
-
-        Picture win_picture = XRenderCreatePicture(
-                        dpy , pixmap,
-                        XRenderFindStandardFormat(dpy, PictStandardRGB24), 0, 0);
-			 */
-			/*
-        XRenderComposite( dpy, PictOpSrc, picture, None,
-                          pixmap, 0, 0, 0, 0, 0, 0, pm->ViewPort().Width(), pm->ViewPort().Height() );
-			 */
-
-			/*
-        double alpha = 0.4;
-        unsigned long opacity = (0xFFFFFFFF / 0xff) * alpha;
-        Atom XA_NET_WM_WINDOW_OPACITY = XInternAtom(dpy, "_NET_WM_WINDOW_OPACITY", False);
-
-        //XSetBackground(dpy, overlay_gc, 0x80808080);
-
-        XChangeProperty( dpy, overlay_win,
-                         XA_NET_WM_WINDOW_OPACITY,
-                         XA_CARDINAL, 32, PropModeReplace, (unsigned char*)&opacity,1) ;
-
-        XFlush(dpy);
-			 */
-			/*
-        XCopyArea(dpy, pixmap, overlay_win,overlay_gc,
-                  0 ,0,
-                  pm->ViewPort().Width(), pm->ViewPort().Height(),
-                  pm->DrawPort().X(), pm->DrawPort().Y());
-			 */
-
-			int shape_event_base, shape_error_base;
-			bool ret = XShapeQueryExtension (dpy, &shape_event_base, &shape_error_base);
-			if(ret)
-			{
-				//XFillRectangle(dpy, pixmap, gc, 0, 0, pm->ViewPort().Width(),  pm->ViewPort().Height());
-
-				//XShapeCombineMask(dpy, overlay_win, ShapeBounding, 0, 0, pixmap, ShapeSet);
-			}
-
-
-			XSync(dpy, true);
-			XFreePixmap(dpy, pixmap);
-			DestroyPixmap(pm);
-
+            Osdgst->FlushOsd(pm);
 		}
 
-		//XSync(dpy, true);
-		//XFlush(dpy);
-
-		g_printerr("Flush(void) \n");
-	}		// end of method
+	};// end of method
 
 	cPixmap *CreatePixmap(int Layer, const cRect &ViewPort, const cRect &DrawPort)
 	{
 		g_printerr("CreatePixmap() \n");
 		return cOsd::CreatePixmap(Layer, ViewPort, DrawPort);
-	}		// end of method
+	};// end of method
 
+	
+	void *CreateMainWindow()
+	{
+        XEvent event;
+        int x,y, attr_mask;
+        XSizeHints hints;
+        XWMHints *startup_state;
+        XTextProperty textprop;
+        XSetWindowAttributes attr = {0,};
+        int numfbconfigs;
+        static char *title = "Main Window";
+
+        dpy = XOpenDisplay(NULL);
+        if (!dpy) {
+            g_printerr("Couldn't connect to X server\n");
+        }
+        int Xscreen = DefaultScreen(dpy);
+        Window Xroot = RootWindow(dpy, Xscreen);
+
+        GLXFBConfig *fbconfigs = glXChooseFBConfig(dpy, Xscreen, VisDataMain, &numfbconfigs);
+        GLXFBConfig fbconfig = 0;
+        for(int i = 0; i<numfbconfigs; i++) {
+            osd_visual = (XVisualInfo*) glXGetVisualFromFBConfig(dpy, fbconfigs[i]);
+            if(!osd_visual)
+                continue;
+
+            pict_format = XRenderFindVisualFormat(dpy, osd_visual->visual);
+            if(!pict_format)
+                continue;
+
+            fbconfig = fbconfigs[i];
+            if(pict_format->direct.alphaMask > 0) {
+                break;
+            }
+        }
+
+        if(!fbconfig) {
+            g_printerr("No matching FB config found");
+        }
+
+        describe_fbconfig(fbconfig);
+
+        /* Create a colormap - only needed on some X clients, eg. IRIX */
+        cmap = XCreateColormap(dpy, Xroot, osd_visual->visual, AllocNone);
+
+        attr.colormap = cmap;
+        attr.background_pixmap = None;
+        attr.border_pixmap = None;
+        attr.border_pixel = 0;
+        attr.event_mask =
+                StructureNotifyMask |
+                EnterWindowMask |
+                LeaveWindowMask |
+                ExposureMask |
+                ButtonPressMask |
+                ButtonReleaseMask |
+                OwnerGrabButtonMask |
+                KeyPressMask |
+                KeyReleaseMask;
+
+        attr_mask = 
+                CWBackPixmap|
+                CWColormap|
+                CWBorderPixel|
+                CWEventMask|
+                CWBackPixel;
+
+        attr.background_pixel = 0;
+        
+        osd_width = DisplayWidth(dpy, DefaultScreen(dpy))/2;
+        osd_height = DisplayHeight(dpy, DefaultScreen(dpy))/2;
+        x=osd_width/2, y=osd_height/2;
+
+        //window_handle = XCreateWindow( Xdisplay, Xroot, x, y, 1280, 720, 0, osd_visual->depth, InputOutput, osd_visual->visual, attr_mask, &attr);
+        //win = XCreateWindow( dpy, Xroot, 0, 0, 1280, 720, 0, osd_visual->depth, InputOutput, osd_visual->visual, attr_mask, &attr);
+        win = XCreateWindow(dpy, Xroot, x, y, 1280, 720, 0, osd_visual->depth, InputOutput, osd_visual->visual, CWBackPixel | CWColormap | CWBorderPixel, &attr);
+
+       
+
+        if( !win ) {
+            g_printerr("Couldn't create the window\n");
+        }
+
+    #if USE_GLX_CREATE_WINDOW
+        fputs("glXCreateWindow ", stderr);
+        int glXattr[] = { None };
+        glX_win = glXCreateWindow(dpy, fbconfig, win, glXattr);
+        if( !glX_window_handle ) {
+            fatalError("Couldn't create the GLX window\n");
+        }
+    #else
+        glX_win = win;
+    #endif
+
+        textprop.value = (unsigned char*)title;
+        textprop.encoding = XA_STRING;
+        textprop.format = 8;
+        textprop.nitems = strlen(title);
+
+        hints.x = x;
+        hints.y = y;
+        hints.width = osd_width;
+        hints.height = osd_height;
+        hints.flags = USPosition|USSize;
+
+        startup_state = XAllocWMHints();
+        startup_state->initial_state = NormalState;
+        startup_state->flags = StateHint;
+
+        XSetWMProperties(dpy, win,&textprop, &textprop,
+                NULL, 0,
+                &hints,
+                startup_state,
+                NULL);
+
+        XFree(startup_state);
+
+        XMapWindow(dpy, win);
+        //XIfEvent(dpy, &event, WaitForMapNotify, (char*)&win);
+
+        if ((del_atom = XInternAtom(dpy, "WM_DELETE_WINDOW", 0)) != None) {
+            XSetWMProtocols(dpy, win, &del_atom, 1);
+        }
+        
+        gc = XCreateGC(dpy, win, 0, NULL);
+
+        XSetForeground(dpy, gc, whiteColor);
+        
+		g_printerr("CreateMainWindow() \n");
+	};// end of method
+    
+    /*
+    * describe_fbconfig
+    */
+    void describe_fbconfig(GLXFBConfig fbconfig)
+    {
+        int doublebuffer;
+        int red_bits, green_bits, blue_bits, alpha_bits, depth_bits;
+
+        glXGetFBConfigAttrib(dpy, fbconfig, GLX_DOUBLEBUFFER, &doublebuffer);
+        glXGetFBConfigAttrib(dpy, fbconfig, GLX_RED_SIZE, &red_bits);
+        glXGetFBConfigAttrib(dpy, fbconfig, GLX_GREEN_SIZE, &green_bits);
+        glXGetFBConfigAttrib(dpy, fbconfig, GLX_BLUE_SIZE, &blue_bits);
+        glXGetFBConfigAttrib(dpy, fbconfig, GLX_ALPHA_SIZE, &alpha_bits);
+        glXGetFBConfigAttrib(dpy, fbconfig, GLX_DEPTH_SIZE, &depth_bits);
+
+        fprintf(stderr, "FBConfig selected:\n"
+                "Doublebuffer: %s\n"
+                "Red Bits: %d, Green Bits: %d, Blue Bits: %d, Alpha Bits: %d, Depth Bits: %d\n",
+                doublebuffer == True ? "Yes" : "No", 
+                        red_bits, green_bits, blue_bits, alpha_bits, depth_bits);
+    }; // end of method
+    
+    static Bool WaitForMapNotify(Display *d, XEvent *e, char *arg)
+    {
+        return d && e && arg && (e->type == MapNotify) && (e->xmap.window == *(Window*)arg);
+    }; // end of method
+
+
+    
 };
 
 class cGstreamerOsdProvider : public cOsdProvider {
@@ -472,23 +559,13 @@ cOsd *cGstreamerOsdProvider::Osd;
 
 class cGstreamerDevice : cDevice {
 public:
-	/*
-    bool SignalStats( int &Valid, double *Strength = NULL, double *Cnr = NULL, double *BerPre = NULL, double *BerPost = NULL, double *Per = NULL, int *Status = NULL) const
-    {
-	return false;
-    }// end of method
-	 */
-
-	//Data data;
 
 	cGstreamerDevice() : cDevice()
-{
-
-
-		remove(TEMP_PATH);
+    {
+        remove(TEMP_PATH);
 		g_printerr("GstreamerDevice() : cDevice() \n");
 		g_printerr("gstreamer Version %s \n" ,gst_version_string());
-}		// end of method
+    };// end of method
 
 	virtual ~cGstreamerDevice()
 	{
@@ -510,7 +587,6 @@ public:
 			if( live_stream_is_runnig)
 			{
 				gst_element_set_state (appsrc, GST_STATE_NULL);
-				//gst_element_set_state (pipeline, GST_STATE_NULL);
 				ilive_stream_count = 0;
 				live_stream_is_runnig = FALSE;
 				remove(TEMP_PATH);
@@ -523,15 +599,12 @@ public:
 		case 1:
 		{
 			gst_element_set_state (appsrc, GST_STATE_NULL);
-			//gst_element_set_state (pipeline, GST_STATE_NULL);
 			g_printerr("SetPlayMode (%d) GST_STATE_NULL\n",PlayMode);
 			break;
 		}
 		default:
 			break;
 		}
-
-		//g_printerr("SetPlayMode (%d)\n",PlayMode);
 
 		return true;
 
@@ -648,7 +721,6 @@ protected:
 		g_printerr("\n");
 
 		gst_element_set_state (appsrc, GST_STATE_PLAYING);
-		//gst_element_set_state (pipeline, GST_STATE_PLAYING);
 
 		g_printerr("StartReplay() \n");
 
@@ -697,13 +769,9 @@ public:
 		open_display();
 		gst_init (&argc, &argv);
 
-		//const gchar *attrib = " ! tsparse ! video/x-h264 ! h264parse !avdec_h264 ! x264enc ! vaapidecode ! vaapisink";
-
-		//uri = g_strdup_printf ("playbin uri=file://%s %s", TEMP_PATH, attrib);
 		uri = g_strdup_printf ("playbin uri=file://%s", TEMP_PATH);
 
 		appsrc = gst_element_factory_make("playbin", "playbin");
-		//g_object_set(appsrc, "uri", "https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_cropped_multilingual.webm", NULL);
 		local_uri = g_strdup_printf ("file://%s", TEMP_PATH);
 		g_object_set(appsrc, "uri", local_uri, NULL);
 		g_printerr("cPluginGstreamerdevice:ProcessArgs(): g_object_set uri %s \n", local_uri);
@@ -711,30 +779,6 @@ public:
 		bus = gst_element_get_bus(appsrc);
 		gst_bus_set_sync_handler(bus, (GstBusSyncHandler) create_window, appsrc, NULL);
 		gst_bus_add_watch(bus, (GstBusFunc)handle_message, NULL);
-
-
-
-		/*
-    pipeline = gst_pipeline_new ("my_pipeline");
-    local_uri = g_strdup_printf ("%s", TEMP_PATH);
-    GstElement *filesrc  = gst_element_factory_make ("filesrc", "my_filesource");
-    //GstElement *sink     = gst_element_factory_make ("autovideosink", "autovideosink");
-    GstElement *sink     = gst_element_factory_make ("autovideosink", "sink");
-
-    GstElement *decoder  = gst_element_factory_make ("decodebin", "my_decoder");
-
-    g_object_set (G_OBJECT (filesrc), "location", local_uri, NULL);
-    gst_bin_add_many (GST_BIN (pipeline), filesrc, decoder, sink, NULL);
-    if (!gst_element_link_many (filesrc, decoder, sink, NULL)) {
-      g_print ("Failed to link one or more elements!\n");
-      return -1;
-    }
-		 */
-		/*
-    bus = gst_element_get_bus(pipeline);
-    gst_bus_set_sync_handler(bus, (GstBusSyncHandler) create_window, pipeline, NULL);
-    gst_bus_add_watch(bus, (GstBusFunc)handle_message, NULL);
-		 */
 
 
 		/* Set flags to show Audio and Video, but ignore Subtitles */

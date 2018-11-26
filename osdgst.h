@@ -13,18 +13,21 @@
 #include <X11/extensions/Xrender.h>
 #include <X11/Xutil.h>
 
+#include <vdr/config.h>
+#include <vdr/osd.h>
+
 static int Xscreen;
 static Atom del_atom;
-static Colormap cmap;
 static Display *Xdisplay;
+static Colormap cmap;
 static XVisualInfo *osd_visual;
 static XRenderPictFormat *pict_format;
 static GLXFBConfig *fbconfigs, fbconfig;
 static int numfbconfigs;
 static GLXContext render_context;
-static Window Xroot, window_handle;
 static GLXWindow glX_window_handle;
-static int width, height;
+static int osd_width, osd_height;
+static GC osd_gc;
 
 static int VisData[] = {
 		GLX_RENDER_TYPE, GLX_RGBA_BIT,
@@ -39,21 +42,29 @@ static int VisData[] = {
 };
 
 
-class cOsdgst{
+class cOsdgst : public cOsd {
 private:
 
 public:
-
-	cOsdgst();
+    
+    Window Xroot, window_handle;
+ 
+	cOsdgst(int Left, int Top, uint Level); // end of method
 
 	~cOsdgst();
 
-	void *CreateWindow();
+	void *CreateWindow(Display *parentdpy);
 
 	int isExtensionSupported(const char * extList, const char *extension);
 
 	void fatalError(const char *why);
 
+ 	void Debug(const char *why);
+
 	void describe_fbconfig(GLXFBConfig fbconfig);
+    
+    void FlushOsd(cPixmapMemory *pm);
+    
+    cPixmap *CreatePixmap(int Layer, const cRect &ViewPort, const cRect &DrawPort);
 
 }; // end of class
