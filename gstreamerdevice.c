@@ -138,75 +138,16 @@ static GstBusSyncReply create_window(GstBus *bus, GstMessage *message, GstPipeli
  * open the X11 Windows
  * 
 */
-static void open_display(const char *video_port)
+static void open_display(const char *display_name = NULL)
 {
-  
-  if(video_port && *video_port)
-  {
-    dpy = XOpenDisplay(video_port);
-    if(dpy == NULL)
-    {
-      g_printerr("open_display: Xorg is not runnig \n"); 	
-    }
-    else
-    {
-      g_printerr("open_display: Xorg is runnig \n"); 	
-    }
-    
+  if ((!display_name || !*display_name) && !(display_name = getenv("DISPLAY"))) {
+    display_name = ":0.0";
   }
-  
-  if(dpy == NULL)
-  {
-    video_port = getenv("DISPLAY");
-    
-    if(video_port == NULL)
-    {
-      setenv("DISPLAY", ":0", 1);
-    }
-    
-    video_port = getenv("DISPLAY");
-    
-    dpy = XOpenDisplay(video_port);
-    
-    if(dpy == NULL)
-    {
-      g_printerr("open_display: faild to connect to X Server (%s) \n", video_port); 	
-    }
-    else
-    {
-      g_printerr("open_display: connect to X Server (%s) \n", video_port); 	
-    }
-      
+
+  if (!(dpy = XOpenDisplay(display_name))) {
+    g_printerr("open_display: faild to connect to X Server (%s) \n", display_name);
   }
-  
-  if(dpy == NULL)
-  {
-     dpy = XOpenDisplay(":0.0");
-     if(dpy == NULL)
-     {
-       g_printerr("open_display: faild to connect to X Server (:0.0) \n"); 	
-     }
-     else
-     {
-       g_printerr("open_display: connect to X Server (:0.0) \n"); 	
-     }
-  }
-  
-  if(dpy == NULL)
-  {
-     dpy = XOpenDisplay(":0");
-     if(dpy == NULL)
-     {
-       g_printerr("open_display: faild to connect to X Server (:0) \n"); 	
-     }
-     else
-     {
-       g_printerr("open_display: connect to X Server (:0) \n"); 	
-     }
-  }
-  
-  
-} // end of function
+}
 
 
 
@@ -819,7 +760,7 @@ public:
     setenv("GST_VAAPI_ALL_DRIVERS", "1", 1);
     setenv("GST_DEBUG", "2", 2);
           
-    open_display("");
+    open_display();
     gst_init (&argc, &argv);
 
     //const gchar *attrib = " ! tsparse ! video/x-h264 ! h264parse !avdec_h264 ! x264enc ! vaapidecode ! vaapisink";
