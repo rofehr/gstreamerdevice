@@ -63,9 +63,7 @@ static gboolean handle_message(GstBus *bus, GstMessage *msg)
 		break;
 	};
 	return 0;
-}
-;
-//end of function
+};//end of function
 
 static GstBusSyncReply create_window(GstBus *bus, GstMessage *message, GstPipeline *pipeline)
 {
@@ -100,9 +98,7 @@ static void open_display(const char *display_name = NULL)
 		g_printerr("open_display: faild to connect to X Server (%s) \n",
 				display_name);
 	}
-}
-;
-//end of function
+};//end of function
 
 
 #include <X11/Xlib.h>
@@ -170,7 +166,7 @@ public:
 
 		return true;
 
-	} // end of method
+	};// end of method
 
 	virtual bool Initialize(void);
 
@@ -178,7 +174,7 @@ public:
 	{
 		return true;
 
-	} // end of method
+	};// end of method
 
 	virtual void Housekeeping(void) {}
 	virtual const char *MainMenuEntry(void) { return NULL; }
@@ -194,7 +190,7 @@ bool cPluginGstreamerdevice::Initialize(void)
 	new cGstreamerDevice();
 
 	return true;
-}
+};// end of method
 
 
 
