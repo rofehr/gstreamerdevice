@@ -4,35 +4,68 @@ class cGstreamerOsdProvider : public cOsdProvider {
 private:
 	static cOsd *Osd;
 protected:
+	/*
+	 * Construktor
+	 */
 	cOsd *CreateOsd(int Left, int Top, uint Level)
 	{
 
 		return Osd = new cGstreamerOsd(Left, Top, Level);
 
-	}		// end of method
+	};// end of method
 
+	/*
+	 * ProvidesTrueColor
+	 */
 	bool ProvidesTrueColor(void)
 	{
 		return true;
-	}		// end of method
+	};// end of method
 
+	/*
+	 * StoreImageData
+	 */
 	int StoreImageData(const cImage &Image)
 	{
 		return 0;
 
-	}		// end of method
+	};// end of method
 
-	void DropImageData(int ImageHandle) {}
+	/*
+	 * DropImageData
+	 */
+	void DropImageData(int ImageHandle)
+	{
+
+	};// end of method
 
 public:
-	cGstreamerOsdProvider() : cOsdProvider() {}
-	~cGstreamerOsdProvider() {}
+	/*
+	 * Construktor
+	 */
+	cGstreamerOsdProvider() : cOsdProvider()
+{
+
+};// end of method
+
+	/*
+	 * Deconstruktor
+	 */
+	~cGstreamerOsdProvider()
+	{
+
+	};// end of method
 };
 
+/*
+ * OSD Class
+ */
 cOsd *cGstreamerOsdProvider::Osd;
 
 
-
+/*
+ * Construktor
+ */
 cGstreamerDevice::cGstreamerDevice() : cDevice()
 {
 	remove(TEMP_PATH);
@@ -40,17 +73,25 @@ cGstreamerDevice::cGstreamerDevice() : cDevice()
 	g_printerr("gstreamer Version %s \n" ,gst_version_string());
 };// end of method
 
-
+/*
+ * Deconstruktor
+ */
 cGstreamerDevice::~cGstreamerDevice()
 {
 	g_printerr("~cGstreamerDevice() \n");
-}		// end of method
+};// end of method
 
+/*
+ * HasDecoder
+ */
 bool cGstreamerDevice::HasDecoder(void) const
 {
 	return true;
-}		// end of method
+};// end of method
 
+/*
+ * SetPlayMode
+ */
 bool cGstreamerDevice::SetPlayMode(ePlayMode PlayMode)
 {
 
@@ -82,51 +123,75 @@ bool cGstreamerDevice::SetPlayMode(ePlayMode PlayMode)
 
 	return true;
 
-}		// end of method
+};// end of method
 
+/*
+ * PlayVideo
+ */
 int cGstreamerDevice::PlayVideo(const uchar *Data, int Length)
 {
 	g_printerr("PlayVideo  \n");
 	return Length;
-}		// end of method
+};// end of method
 
+/*
+ * PlayAudio
+ */
 int cGstreamerDevice::PlayAudio(const uchar *Data, int Length, uchar Id)
 {
 	g_printerr("PlayAudio \n");
 	return Length;
 
-}		// end of method
+};// end of method
 
+/*
+ * PlayTsVideo
+ */
 int cGstreamerDevice::PlayTsVideo(const uchar *Data, int Length)
 {
 	g_printerr("PlayTsVideo \n");
 	return Length;
-}		// end of method
+};// end of method
 
+/*
+ * PlayTsAudio
+ */
 int cGstreamerDevice::PlayTsAudio(const uchar *Data, int Length)
 {
 	g_printerr("PlayTsAudio \n");
 	return Length;
-}
+};// end of method
+
+/*
+ * PlayTsSubtitle
+ */
 int cGstreamerDevice::PlayTsSubtitle(const uchar *Data, int Length)
 {
 	g_printerr("PlayTsSubtitle \n");
 	return Length;
-}
+};// end of method
 
+/*
+ * PlayPes
+ */
 int cGstreamerDevice::PlayPes(const uchar *Data, int Length, bool VideoOnly)
 {
 	g_printerr("PlayPes \n");
 	return Length;
-}		// end of method
+};// end of method
 
+/*
+ * push_to_buffer
+ */
 int cGstreamerDevice::push_to_buffer(const uchar *Data, int Length)
 {
 	return Length;
 
-}
+};// end of method
 
-// PlayTs
+/*
+ * PlayTs
+ */
 int cGstreamerDevice::PlayTs(const uchar *Data, int Length, bool VideoOnly)
 {
 
@@ -159,42 +224,61 @@ int cGstreamerDevice::PlayTs(const uchar *Data, int Length, bool VideoOnly)
 
 
 	return Length;
-}		// end of method
+};// end of method
 
+/*
+ * Poll
+ */
 bool cGstreamerDevice::Poll(cPoller &Poller, int TimeoutMs)
 {
 	g_printerr("Poll\n");
 	return true;
-}		// end of method
+};// end of method
 
+/*
+ * Flush
+ */
 bool cGstreamerDevice::Flush(int TimeoutMs)
 {
 	return true;
-}
+};// end of method
 
+/*
+ * Start
+ */
 bool cGstreamerDevice::Start(void)
 {
 	return true;
-}		// end of method
+};// end of method
 
-
+/*
+ * MakePrimaryDevice
+ */
 void cGstreamerDevice::MakePrimaryDevice(bool On)
 {
 	if (On) new cGstreamerOsdProvider();
 	cDevice::MakePrimaryDevice(On);
-}; // end of method
+};// end of method
 
+/*
+ * StartReplayBuffer
+ */
 void cGstreamerDevice::StartReplayBuffer()
 {
 	return;
-} // end of method
+};// end of method
 
+/*
+ * ShowOverlay
+ */
 void cGstreamerDevice::ShowOverlay()
 {
 
-} // end of method
+};// end of method
 
-
+/*
+ * StartReplay
+ */
 void cGstreamerDevice::StartReplay()
 {
 
@@ -215,6 +299,6 @@ void cGstreamerDevice::StartReplay()
 	}
 
 
-} // end of method
+};// end of method
 
 

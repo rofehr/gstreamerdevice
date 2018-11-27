@@ -1,10 +1,12 @@
 #include "cGstreamerOsd.h"
 
-
+/*
+ * WaitForNotify
+ */
 static Bool WaitForMapNotify(Display *d, XEvent *e, char *arg)
 {
     return d && e && arg && (e->type == MapNotify) && (e->xmap.window == *(Window*)arg);
-}; // end of method
+};// end of method
 
 
 /*
@@ -13,7 +15,7 @@ static Bool WaitForMapNotify(Display *d, XEvent *e, char *arg)
 void cGstreamerOsd::SetActive(bool on)
 {
 	cOsd::SetActive(on);
-}// end of method
+};// end of method
 
 /*
  * Construktor
@@ -81,7 +83,7 @@ cGstreamerOsd::cGstreamerOsd(int Left, int Top, uint Level) : cOsd(Left, Top, Le
 	Osdgst->CreateWindow(dpy);
 
 	g_printerr("cGstreamerOsd(int Left, int Top, uint Level) : cOsd(Left, Top, Level) \n");
-}; // end of method
+};// end of method
 
 /*
  * Deconstruktor
@@ -96,7 +98,7 @@ cGstreamerOsd::~cGstreamerOsd()
 	//XFlush(dpy);
 
 	g_printerr("~cGstreamerOsd() \n");
-}; // end of method
+};// end of method
 
 /*
  * SetAreas
@@ -119,7 +121,7 @@ eOsdError cGstreamerOsd::SetAreas(const tArea *Areas, int NumAreas)
 	//return oeOk;
 	return cOsd::SetAreas(Areas, NumAreas);
 
-}; // end of method
+};// end of method
 
 /*
  * Flush
@@ -310,7 +312,7 @@ void cGstreamerOsd::describe_fbconfig(GLXFBConfig fbconfig)
             "Red Bits: %d, Green Bits: %d, Blue Bits: %d, Alpha Bits: %d, Depth Bits: %d\n",
             doublebuffer == True ? "Yes" : "No",
                     red_bits, green_bits, blue_bits, alpha_bits, depth_bits);
-}; // end of method
+};// end of method
 
 
 
