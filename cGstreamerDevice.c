@@ -1,3 +1,11 @@
+/*
+ * cGstreamerdevice.s:
+ *
+ *
+ *
+ * $Id$
+ */
+
 #include "cGstreamerDevice.h"
 
 class cGstreamerOsdProvider : public cOsdProvider {

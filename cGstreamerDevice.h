@@ -1,3 +1,11 @@
+/*
+ * cGstreamerdevice.h:
+ *
+ *
+ *
+ * $Id$
+ */
+
 #include <vdr/config.h>
 #include <vdr/osd.h>
 #include <vdr/device.h>

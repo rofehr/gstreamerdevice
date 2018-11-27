@@ -1,3 +1,11 @@
+/*
+ * osdgst.h:
+ *
+ *
+ *
+ * $Id$
+ */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -46,9 +54,9 @@ class cOsdgst : public cOsd {
 private:
 
 public:
-    
-    Window Xroot, window_handle;
- 
+
+	Window Xroot, window_handle;
+
 	cOsdgst(int Left, int Top, uint Level); // end of method
 
 	~cOsdgst();
@@ -59,12 +67,12 @@ public:
 
 	void fatalError(const char *why);
 
- 	void Debug(const char *why);
+	void Debug(const char *why);
 
 	void describe_fbconfig(GLXFBConfig fbconfig);
-    
-    void FlushOsd(cPixmapMemory *pm);
-    
-    cPixmap *CreatePixmap(int Layer, const cRect &ViewPort, const cRect &DrawPort);
+
+	void FlushOsd(cPixmapMemory *pm);
+
+	cPixmap *CreatePixmap(int Layer, const cRect &ViewPort, const cRect &DrawPort);
 
 }; // end of class

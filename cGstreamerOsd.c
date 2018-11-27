@@ -1,3 +1,11 @@
+/*
+ * cGstreamerOsd.c:
+ *
+ *
+ *
+ * $Id$
+ */
+
 #include "cGstreamerOsd.h"
 
 /*
