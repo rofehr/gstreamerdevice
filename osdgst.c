@@ -153,7 +153,7 @@
 		xev.xclient.message_type = wm_state;
 		xev.xclient.format = 32;
 		xev.xclient.data.l[0] = 1;
-		xev.xclient.data.l[1] = wm_fullscreen;
+		//xev.xclient.data.l[1] = wm_fullscreen;
 		xev.xclient.data.l[2] = 0;
 		XSendEvent (Xdisplay, DefaultRootWindow(Xdisplay), 
                     False,
@@ -280,7 +280,7 @@
     };// end of method
 
     /*
-    * Flush
+    * CreatePixmap
     */
     cPixmap *cOsdgst::CreatePixmap(int Layer, const cRect &ViewPort, const cRect &DrawPort)
 	{
