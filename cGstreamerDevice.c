@@ -1,5 +1,5 @@
 /*
- * cGstreamerdevice.s:
+ * cGstreamerdevice.c:
  *
  *
  *
