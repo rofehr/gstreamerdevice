@@ -1,3 +1,10 @@
+/*
+ * osdgst.h
+ *
+ * See the README file for copyright information and how to reach the author.
+ *
+ * $Id$
+ */
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -53,7 +60,7 @@ public:
 
 	~cOsdgst();
 
-	void *CreateWindow(Display *parentdpy);
+	void *CreateWindow();
 
 	int isExtensionSupported(const char * extList, const char *extension);
 

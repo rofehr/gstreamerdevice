@@ -1,3 +1,10 @@
+/*
+ * osdgst.c
+ *
+ * See the README file for copyright information and how to reach the author.
+ *
+ * $Id$
+ */
     #include "osdgst.h"
 
     static Bool WaitForMapNotify(Display *d, XEvent *e, char *arg)
@@ -25,7 +32,7 @@
     /*
     * CreateWindow
     */
-    void *cOsdgst::CreateWindow(Display *parentdpy)
+    void *cOsdgst::CreateWindow()
     {
         XEvent event;
         int x,y, attr_mask;
@@ -84,14 +91,10 @@
                 KeyReleaseMask;
 
         attr_mask = 
-                //	CWBackPixmap|
                 CWColormap|
                 CWBorderPixel|
                 CWEventMask;
 
-        //osd_width = DisplayWidth(Xdisplay, DefaultScreen(Xdisplay))/2;
-        //osd_height = DisplayHeight(Xdisplay, DefaultScreen(Xdisplay))/2;
-        //x=osd_width/2, y=osd_height/2;
 
         window_handle = XCreateWindow( Xdisplay, Xroot, 0, 0, 1280, 720, 0, osd_visual->depth, InputOutput, osd_visual->visual, attr_mask, &attr);
        
