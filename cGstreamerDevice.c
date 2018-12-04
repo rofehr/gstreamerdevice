@@ -259,7 +259,7 @@ cGstreamerDevice::cGstreamerDevice() : cDevice()
 			attr.colormap = XCreateColormap(dpy, XDefaultRootWindow(dpy), visual, AllocNone);
 			attr.border_pixel = 0;
 
-			win = XCreateWindow(dpy, DefaultRootWindow(dpy), 0 ,0, 1280, 720, 0, 24, InputOutput, visual, CWBackPixel | CWColormap | CWBorderPixel, &attr);
+			win = XCreateWindow(dpy, DefaultRootWindow(dpy), 0 ,0, 1920, 1080, 0, 24, InputOutput, visual, CWBackPixel | CWColormap | CWBorderPixel, &attr);
 			gc = XCreateGC(dpy, win, 0, NULL);
 
 			XMapWindow(dpy, win);
