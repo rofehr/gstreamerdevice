@@ -185,13 +185,15 @@ void cGstreamerDevice::Init()
 
 	open_display();
 	gst_init (NULL, NULL);
-
+    
+    FILE *fd = fopen(TEMP_PATH,"a+");
+    
 	uri = g_strdup_printf ("playbin uri=file://%s", TEMP_PATH);
 
 	appsrc = gst_element_factory_make("playbin", "playbin");
 	local_uri = g_strdup_printf ("file://%s", TEMP_PATH);
 	g_object_set(appsrc, "uri", local_uri, NULL);
-	g_printerr("cPluginGstreamerdevice:ProcessArgs(): g_object_set uri %s \n", local_uri);
+	g_printerr("cGstreamerDevice::Init() g_object_set uri %s \n", local_uri);
 
 	bus = gst_element_get_bus(appsrc);
 	gst_bus_set_sync_handler(bus, (GstBusSyncHandler) create_window, appsrc, NULL);
@@ -224,7 +226,7 @@ void cGstreamerDevice::Init()
 
 cGstreamerDevice::cGstreamerDevice() : cDevice()
 {
-	//remove(TEMP_PATH);
+	remove(TEMP_PATH);
 	g_printerr("GstreamerDevice() : cDevice() \n");
 	g_printerr("gstreamer Version %s \n" ,gst_version_string());
 
@@ -315,7 +317,7 @@ bool cGstreamerDevice::SetPlayMode(ePlayMode PlayMode)
 			gst_element_set_state (appsrc, GST_STATE_NULL);
 			ilive_stream_count = 0;
 			live_stream_is_runnig = FALSE;
-			//remove(TEMP_PATH);
+			remove(TEMP_PATH);
 			g_printerr("SetPlayMode (%d) live_stream_is_runnig, ilive_stream_count %d\n",PlayMode, ilive_stream_count);
 
 		}
