@@ -60,8 +60,9 @@
             if(!pict_format)
                 continue;
 
-            fbconfig = fbconfigs[i];
             if( (pict_format->direct.alphaMask > 0) && (pict_format->depth == 32) ) {
+                fbconfig = fbconfigs[i];
+		fatalError("(pict_format->direct.alphaMask > 0) && (pict_format->depth == 32)\n");    
                 break;
             }
         }
