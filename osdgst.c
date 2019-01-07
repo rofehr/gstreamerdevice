@@ -148,21 +148,23 @@
 
         
         Atom wm_state = XInternAtom(Xdisplay, "_NET_WM_STATE", true);
-		Atom wm_fullscreen = XInternAtom(Xdisplay, "_NET_WM_STATE_FULLSCREEN", true);
-		XEvent xev;
-		memset(&xev, 0, sizeof(xev));
-		xev.type = ClientMessage;
-		xev.xclient.window = window_handle;
-		xev.xclient.message_type = wm_state;
-		xev.xclient.format = 32;
-		xev.xclient.data.l[0] = 1;
-		xev.xclient.data.l[1] = wm_fullscreen;
-		xev.xclient.data.l[2] = 0;
-		XSendEvent (Xdisplay, DefaultRootWindow(Xdisplay), 
+	Atom cmAtom = XInternAtom(Xdisplay, "_NET_WM_CM_S0", 0);    
+	Atom wm_fullscreen = XInternAtom(Xdisplay, "_NET_WM_STATE_FULLSCREEN", true);
+	XEvent xev;
+	memset(&xev, 0, sizeof(xev));
+	xev.type = ClientMessage;
+	xev.xclient.window = window_handle;
+	xev.xclient.message_type = wm_state;
+	xev.xclient.format = 32;
+	xev.xclient.data.l[0] = 1;
+	xev.xclient.data.l[1] = wm_fullscreen;
+	xev.xclient.data.l[2] = 0;
+	XSendEvent( Xdisplay, DefaultRootWindow(Xdisplay), 
                     False,
-					SubstructureRedirectMask | SubstructureNotifyMask, &xev);
+		    SubstructureRedirectMask | SubstructureNotifyMask, &xev);
+	    
         xev.xclient.window = window_handle;
-		XFlush(Xdisplay);
+	XFlush(Xdisplay);
 
         
     }; // end of method
