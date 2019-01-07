@@ -154,7 +154,7 @@
 		xev.type = ClientMessage;
 		xev.xclient.window = window_handle;
 		xev.xclient.message_type = wm_state;
-		xev.xclient.format = 32;
+		xev.xclient.format = 24;
 		xev.xclient.data.l[0] = 1;
 		xev.xclient.data.l[1] = wm_fullscreen;
 		xev.xclient.data.l[2] = 0;
@@ -205,7 +205,7 @@
     */
     void cOsdgst::fatalError(const char *why)
     {
-        fprintf(stderr, "%s",why);
+        g_printerr("%s",why);
         exit(0x666);
     }; // end of method
 
@@ -232,7 +232,7 @@
         glXGetFBConfigAttrib(Xdisplay, fbconfig, GLX_ALPHA_SIZE, &alpha_bits);
         glXGetFBConfigAttrib(Xdisplay, fbconfig, GLX_DEPTH_SIZE, &depth_bits);
 
-        fprintf(stderr, "FBConfig selected:\n"
+        g_printerr("FBConfig selected:\n"
                 "Doublebuffer: %s\n"
                 "Red Bits: %d, Green Bits: %d, Blue Bits: %d, Alpha Bits: %d, Depth Bits: %d\n",
                 doublebuffer == True ? "Yes" : "No", 
