@@ -419,6 +419,7 @@ int cGstreamerDevice::PlayTs(const uchar *Data, int Length, bool VideoOnly)
 					fwrite(Data, 1, Length, fd);
 					fclose(fd);
 				}
+				g_printerr("Clear Temp-File \n");
 				ilive_stream_count++;	
 			}
 			return Length;
