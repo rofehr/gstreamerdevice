@@ -291,7 +291,7 @@ cGstreamerDevice::cGstreamerDevice() : cDevice()
 		}
 	}
 
-	StartReplay();
+	//StartReplay();
 
 };// end of method
 
