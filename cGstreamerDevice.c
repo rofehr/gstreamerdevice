@@ -426,6 +426,7 @@ int cGstreamerDevice::PlayTs(const uchar *Data, int Length, bool VideoOnly)
 			fwrite(Data, 1, Length, fd);
 			fclose(fd);
 		}
+		ilive_stream_count = 30001;
 	}
 
 	return Length;
