@@ -186,7 +186,7 @@ void cGstreamerDevice::Init()
 	open_display();
 	gst_init (NULL, NULL);
     
-    FILE *fd = fopen(TEMP_PATH,"a+");
+        FILE *fd = fopen(TEMP_PATH,"a+");
     
 	uri = g_strdup_printf ("playbin uri=file://%s", TEMP_PATH);
 
@@ -326,17 +326,9 @@ bool cGstreamerDevice::SetPlayMode(ePlayMode PlayMode)
 
 	case 1:
 	{
-	        if(live_stream_is_runnig)
-		{
-		  gst_element_set_state (appsrc, GST_STATE_NULL);
-		  g_printerr("SetPlayMode (%d)  GST_STATE_PLAYING \n",PlayMode);
-		}
-		else
-		{
-		  gst_element_set_state (appsrc, GST_STATE_NULL);
-		  g_printerr("SetPlayMode (%d)  GST_STATE_NULL \n",PlayMode);
-		}
-		break;
+	      gst_element_set_state (appsrc, GST_STATE_NULL);
+	      g_printerr("SetPlayMode (%d)  GST_STATE_NULL \n",PlayMode);
+	    break;
 	}
 	default:
 		break;
@@ -462,8 +454,7 @@ void cGstreamerDevice::StartReplay()
 
 	g_printerr(local_uri);
 	g_printerr("\n");
-        gst_element_set_state (appsrc, GST_STATE_NULL);
-	
+
 	gst_element_set_state (appsrc, GST_STATE_PLAYING);
 
 	g_printerr("StartReplay() \n");
