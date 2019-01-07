@@ -62,7 +62,7 @@
 
             if( (pict_format->direct.alphaMask > 0) && (pict_format->depth == 32) ) {
                 fbconfig = fbconfigs[i];
-		fatalError("(pict_format->direct.alphaMask > 0) && (pict_format->depth == 32)\n");    
+		g_printerr("(pict_format->direct.alphaMask > 0) && (pict_format->depth == 32)\n");    
                 break;
             }
         }
