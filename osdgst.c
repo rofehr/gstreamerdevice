@@ -244,7 +244,7 @@
     */
     void cOsdgst::FlushOsd(cPixmapMemory *pm)
     {
-            int depth = 24; // works fine with depth = 24
+            int depth = 32; // works fine with depth = 24
             int bitmap_pad = 32;// 32 for 24 and 32 bpp, 16, for 15&16
             int bytes_per_line = 0;// number of bytes in the client image between the start of one
 
