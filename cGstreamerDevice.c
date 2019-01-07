@@ -328,7 +328,7 @@ bool cGstreamerDevice::SetPlayMode(ePlayMode PlayMode)
 	{
 	        if(live_stream_is_runnig)
 		{
-		  gst_element_set_state (appsrc, GST_STATE_PLAYING);
+		  gst_element_set_state (appsrc, GST_STATE_NULL);
 		  g_printerr("SetPlayMode (%d)  GST_STATE_PLAYING \n",PlayMode);
 		}
 		else
