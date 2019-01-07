@@ -61,7 +61,7 @@
                 continue;
 
             fbconfig = fbconfigs[i];
-            if( (pict_format->direct.alphaMask > 0) && (pict_format->depth == 32) {
+            if( (pict_format->direct.alphaMask > 0) && (pict_format->depth == 32) ) {
                 break;
             }
         }
