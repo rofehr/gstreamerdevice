@@ -60,7 +60,7 @@
             if(!pict_format)
                 continue;
 
-            if( (pict_format->direct.alphaMask > 0) ) {
+            if( pict_format->direct.alphaMask > 0) {
                 fbconfig = fbconfigs[i];
 		g_printerr("(pict_format->direct.alphaMask > 0)\n");    
                 break;
