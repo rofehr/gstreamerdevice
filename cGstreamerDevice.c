@@ -326,8 +326,8 @@ bool cGstreamerDevice::SetPlayMode(ePlayMode PlayMode)
 
 	case 1:
 	{
-		gst_element_set_state (appsrc, GST_STATE_NULL);
-		g_printerr("SetPlayMode (%d) GST_STATE_NULL\n",PlayMode);
+		//gst_element_set_state (appsrc, GST_STATE_NULL);
+		g_printerr("SetPlayMode (%d)\n");
 		break;
 	}
 	default:
