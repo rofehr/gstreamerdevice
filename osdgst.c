@@ -93,7 +93,7 @@
         attr_mask = 
                 CWColormap|
                 CWBorderPixel|
-                CWBackPixel;
+                CWEventMask;
 
         window_handle = XCreateWindow( Xdisplay, Xroot, 0, 0, 1920, 1080, 0, osd_visual->depth, InputOutput, osd_visual->visual, attr_mask, &attr);
        
