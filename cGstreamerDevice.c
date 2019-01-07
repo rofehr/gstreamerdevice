@@ -397,7 +397,7 @@ int cGstreamerDevice::PlayTs(const uchar *Data, int Length, bool VideoOnly)
 
 	if( ilive_stream_count < 30000)
 	{
-		ilive_stream_count++;
+		ilive_stream_count+=Length;
 		return Length;
 	}
 
@@ -419,6 +419,8 @@ int cGstreamerDevice::PlayTs(const uchar *Data, int Length, bool VideoOnly)
 bool cGstreamerDevice::Poll(cPoller &Poller, int TimeoutMs)
 {
 	g_printerr("Poll\n");
+	
+	
 	return true;
 };// end of method
 
