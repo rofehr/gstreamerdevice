@@ -317,7 +317,7 @@ bool cGstreamerDevice::SetPlayMode(ePlayMode PlayMode)
 			gst_element_set_state (appsrc, GST_STATE_NULL);
 			ilive_stream_count = 0;
 			live_stream_is_runnig = FALSE;
-			remove(TEMP_PATH);
+			//remove(TEMP_PATH);
 			g_printerr("SetPlayMode (%d) live_stream_is_runnig, ilive_stream_count %d\n",PlayMode, ilive_stream_count);
 
 		}
