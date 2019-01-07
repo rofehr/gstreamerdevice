@@ -60,15 +60,16 @@
             if(!pict_format)
                 continue;
 
-            if( (pict_format->direct.alphaMask > 0) && (pict_format->depth == 32) ) {
+            if( (pict_format->direct.alphaMask > 0) ) {
                 fbconfig = fbconfigs[i];
-		g_printerr("(pict_format->direct.alphaMask > 0) && (pict_format->depth == 32)\n");    
+		g_printerr("(pict_format->direct.alphaMask > 0)\n");    
                 break;
             }
         }
 
         if(!fbconfig) {
             g_printerr("No matching FB config found");
+	    exit;	
         }
 
         describe_fbconfig(fbconfig);
