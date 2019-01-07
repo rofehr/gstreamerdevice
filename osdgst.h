@@ -63,7 +63,7 @@ public:
 
 	~cOsdgst();
 
-	void *CreateWindow();
+	void *CreateWindow(Window win);
 
 	int isExtensionSupported(const char * extList, const char *extension);
 
