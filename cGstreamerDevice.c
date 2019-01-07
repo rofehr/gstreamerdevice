@@ -398,6 +398,7 @@ int cGstreamerDevice::PlayTs(const uchar *Data, int Length, bool VideoOnly)
 	if( ilive_stream_count < 30000)
 	{
 		ilive_stream_count+=Length;
+		g_printerr("PlayTs (%d)\n", ilive_stream_count);
 		return Length;
 	}
 
