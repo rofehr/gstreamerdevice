@@ -393,7 +393,6 @@ int push_to_buffer(const uchar *Data, int Length)
 int cGstreamerDevice::PlayTs(const uchar *Data, int Length, bool VideoOnly)
 {
 
-
 	FILE *fd = fopen(TEMP_PATH,"a+");
 	if(fd != NULL)
 	{
@@ -416,6 +415,10 @@ int cGstreamerDevice::PlayTs(const uchar *Data, int Length, bool VideoOnly)
 			live_stream_is_runnig = TRUE;
 
 			return Length;
+		}
+		else
+		{
+                     gst_element_set_state (appsrc, GST_STATE_NULL);
 		}
 
 	}
