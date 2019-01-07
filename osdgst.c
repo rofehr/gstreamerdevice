@@ -68,7 +68,7 @@
         }
 
         if(!fbconfig) {
-            fatalError("No matching FB config found");
+            g_printerr("No matching FB config found");
         }
 
         describe_fbconfig(fbconfig);
