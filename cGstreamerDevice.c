@@ -416,11 +416,6 @@ int cGstreamerDevice::PlayTs(const uchar *Data, int Length, bool VideoOnly)
 
 			return Length;
 		}
-		else
-		{
-                     gst_element_set_state (appsrc, GST_STATE_NULL);
-		}
-
 	}
 
 
@@ -435,11 +430,13 @@ bool cGstreamerDevice::Poll(cPoller &Poller, int TimeoutMs)
 
 bool cGstreamerDevice::Flush(int TimeoutMs)
 {
+	g_printerr("Flush\n");
 	return true;
 };// end of methso
 
 bool cGstreamerDevice::Start(void)
 {
+	g_printerr("Start\n");
 	return true;
 };// end of method
 
