@@ -32,7 +32,7 @@
     /*
     * CreateWindow
     */
-    void *cOsdgst::CreateWindow()
+    void *cOsdgst::CreateWindow(Window win)
     {
         XEvent event;
         int x,y, attr_mask;
