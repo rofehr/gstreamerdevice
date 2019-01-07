@@ -397,7 +397,7 @@ int cGstreamerDevice::PlayTs(const uchar *Data, int Length, bool VideoOnly)
 
 	if( ilive_stream_count < 30000)
 	{
-		ilive_stream_count+=Length;
+		ilive_stream_count++;
 		g_printerr("PlayTs (%d)\n", ilive_stream_count);
 		return Length;
 	}
@@ -408,11 +408,25 @@ int cGstreamerDevice::PlayTs(const uchar *Data, int Length, bool VideoOnly)
 		{
 			StartReplay();
 			live_stream_is_runnig = TRUE;
-
+			ilive_stream_count++;			
 			return Length;
+		}
+		else
+		{
+	 		ilive_stream_count++;
 		}
 	}
 
+	if(ilive_stream_count > 3000000 )
+	{
+		remove(TEMP_PATH);
+		FILE *fd = fopen(TEMP_PATH,"a+");
+		if(fd != NULL)
+		{
+			fwrite(Data, 1, Length, fd);
+			fclose(fd);
+		}
+	}
 
 	return Length;
 };// end of method
