@@ -462,7 +462,8 @@ void cGstreamerDevice::StartReplay()
 
 	g_printerr(local_uri);
 	g_printerr("\n");
-
+        gst_element_set_state (appsrc, GST_STATE_NULL);
+	
 	gst_element_set_state (appsrc, GST_STATE_PLAYING);
 
 	g_printerr("StartReplay() \n");
