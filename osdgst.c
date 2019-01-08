@@ -280,7 +280,8 @@
 
             DestroyPixmap(pm);
             
-        Debug("Flush(void) \n");
+        //Debug("Flush(void) \n");
+        g_printerr("cOsdgst::FlushOsd(cPixmapMemory *pm) %d ViewPort().Width %d ViewPort().Height\n",pm->ViewPort().Width() ,pm->ViewPort().Height());
     };// end of method
 
     /*
