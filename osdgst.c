@@ -76,10 +76,11 @@
         cmap = XCreateColormap(Xdisplay, Xroot, osd_visual->visual, AllocNone);
 
         attr.colormap = cmap;
-        attr.background_pixmap = None;
+        attr.background_pixmap = 0x80ffffff;
         attr.border_pixmap = None;
         attr.border_pixel = 0;
-        attr.event_mask =
+/*
+	attr.event_mask =
                 StructureNotifyMask |
                 EnterWindowMask |
                 LeaveWindowMask |
@@ -89,11 +90,11 @@
                 OwnerGrabButtonMask |
                 KeyPressMask |
                 KeyReleaseMask;
-
+*/
         attr_mask = 
                 CWColormap|
                 CWBorderPixel|
-                CWEventMask;
+		CWBackPixel;
 
         window_handle = XCreateWindow( Xdisplay, Xroot, 0, 0, 1920, 1080, 0, osd_visual->depth, InputOutput, osd_visual->visual, attr_mask, &attr);
        
