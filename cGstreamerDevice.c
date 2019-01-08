@@ -410,26 +410,30 @@ int cGstreamerDevice::PlayTs(const uchar *Data, int Length, bool VideoOnly)
 			StartReplay();
 			live_stream_is_runnig = TRUE;
 			ilive_stream_count++;	
-			if(ilive_stream_count > 3000000)
-			{
-				ilive_stream_count=30000;
-				remove(TEMP_PATH);
-				g_printerr("PlayTs(remove) (%d)\n", ilive_stream_count);
-				FILE *fd = fopen(TEMP_PATH,"a+");
-				if(fd != NULL)
-				{
-					fwrite(Data, 1, Length, fd);
-					fclose(fd);
-				}
-				g_printerr("Clear Temp-File \n");
-				ilive_stream_count++;	
-			}
 			return Length;
 		}
 	}
 
 	g_printerr("PlayTs ilive_stream_count (%d)\n", ilive_stream_count);
-	ilive_stream_count++;	
+
+	if(ilive_stream_count > 3000000)
+	{
+		ilive_stream_count=30000;
+		remove(TEMP_PATH);
+		g_printerr("PlayTs(remove) (%d)\n", ilive_stream_count);
+		FILE *fd = fopen(TEMP_PATH,"a+");
+		if(fd != NULL)
+		{
+			fwrite(Data, 1, Length, fd);
+			fclose(fd);
+		}
+		g_printerr("Clear Temp-File \n");
+		ilive_stream_count++;	
+	}
+	else
+	{
+		ilive_stream_count++;	
+	}
 	
 	return Length;
 };// end of method
