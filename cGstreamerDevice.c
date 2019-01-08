@@ -428,6 +428,9 @@ int cGstreamerDevice::PlayTs(const uchar *Data, int Length, bool VideoOnly)
 		}
 	}
 
+	g_printerr("PlayTs ilive_stream_count (%d)\n", ilive_stream_count);
+	ilive_stream_count++;	
+	
 	return Length;
 };// end of method
 
