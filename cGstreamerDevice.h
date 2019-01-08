@@ -88,6 +88,8 @@ public:
 	void Init();
 
 	bool HasDecoder(void) const;
+	
+	bool CanReplay(void) const;
 
 	bool SetPlayMode(ePlayMode PlayMode);
 
