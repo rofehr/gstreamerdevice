@@ -271,7 +271,8 @@
             img->data = (char*)pm->Data();
 
             Pixmap pixmap = XCreatePixmap(Xdisplay, window_handle, uiWidth, uiHeight, depth);
-
+            
+	    XWriteBitmapFile(Xdisplay, "/var/cache/osd.png', pixmap, uiWidth, uiHeight, -1, -1)
 
             int w = uiWidth;
             int h = uiHeight;
