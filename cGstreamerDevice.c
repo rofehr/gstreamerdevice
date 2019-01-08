@@ -420,7 +420,7 @@ int cGstreamerDevice::PlayTs(const uchar *Data, int Length, bool VideoOnly)
 		}
 	}
 
-
+/*
 	if(ilive_stream_count > 300000)
 	{
 		ilive_stream_count=0;
@@ -444,7 +444,7 @@ int cGstreamerDevice::PlayTs(const uchar *Data, int Length, bool VideoOnly)
 	{
 		ilive_stream_count++;	
 	}
-	
+*/	
 	return Length;
 };// end of method
 
