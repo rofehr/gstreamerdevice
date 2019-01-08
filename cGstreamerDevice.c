@@ -293,7 +293,6 @@ cGstreamerDevice::cGstreamerDevice() : cDevice()
 		}
 	}
 
-	//StartReplay();
 
 };// end of method
 
@@ -430,6 +429,8 @@ int cGstreamerDevice::PlayTs(const uchar *Data, int Length, bool VideoOnly)
 		g_printerr("Clear Temp-File \n");
 		gst_element_set_state (appsrc, GST_STATE_NULL);
 		ilive_stream_count++;	
+		gst_element_set_state (appsrc, GST_STATE_PLAY
+
 
 	}
 	else
