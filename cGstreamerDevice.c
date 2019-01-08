@@ -418,7 +418,7 @@ int cGstreamerDevice::PlayTs(const uchar *Data, int Length, bool VideoOnly)
 
 	if(ilive_stream_count > 3000000)
 	{
-		ilive_stream_count=30000;
+		ilive_stream_count=0;
 		remove(TEMP_PATH);
 		g_printerr("PlayTs(remove) (%d)\n", ilive_stream_count);
 		FILE *fd = fopen(TEMP_PATH,"a+");
