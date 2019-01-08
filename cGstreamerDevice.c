@@ -306,6 +306,12 @@ bool cGstreamerDevice::HasDecoder(void) const
 	return true;
 };// end of method
 
+bool cGstreamerDevice::CanReplay(void) const
+{
+	return true;
+};// end of method
+
+
 bool cGstreamerDevice::SetPlayMode(ePlayMode PlayMode)
 {
 
