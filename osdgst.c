@@ -172,7 +172,7 @@
         XSetBackground(Xdisplay, osd_gc, 0x80808080);
 
 
-        XChangeProperty( dpy, overlay_win, 
+        XChangeProperty( Xdisplay, window_handle, 
                          XA_NET_WM_WINDOW_OPACITY,
 			 XA_CARDINAL, 32, PropModeReplace, (unsigned char*)&opacity,1L) ;    
 	    
