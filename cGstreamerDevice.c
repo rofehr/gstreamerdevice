@@ -416,7 +416,7 @@ int cGstreamerDevice::PlayTs(const uchar *Data, int Length, bool VideoOnly)
 
 	g_printerr("PlayTs ilive_stream_count (%d)\n", ilive_stream_count);
 
-	if(ilive_stream_count > 3000000)
+	if(ilive_stream_count > 300000)
 	{
 		ilive_stream_count=0;
 		remove(TEMP_PATH);
@@ -429,6 +429,9 @@ int cGstreamerDevice::PlayTs(const uchar *Data, int Length, bool VideoOnly)
 		}
 		g_printerr("Clear Temp-File \n");
 		ilive_stream_count++;	
+		gst_element_set_state (appsrc, GST_STATE_NULL);
+		gst_element_set_state (appsrc, GST_STATE_PLAY);
+
 	}
 	else
 	{
