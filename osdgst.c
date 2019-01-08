@@ -248,30 +248,32 @@
             int depth = 24; // works fine with depth = 24
             int bitmap_pad = 32;// 32 for 24 and 32 bpp, 16, for 15&16
             int bytes_per_line = 0;// number of bytes in the client image between the start of one
+	    unsigned int uiWidth = pm->ViewPort().Width();
+	    unsigned int uiHeight = pm->ViewPort().Height();
 
-            unsigned char *image32=(unsigned char *)malloc(pm->ViewPort().Width()*pm->ViewPort().Height()*4);
+            unsigned char *image32=(unsigned char *)malloc(uiWidth*uiHeight*4);
 
-            XImage *img = XCreateImage(Xdisplay, osd_visual->visual, depth, ZPixmap, 0, (char*)image32, pm->ViewPort().Width(), pm->ViewPort().Height(), bitmap_pad, bytes_per_line);
+            XImage *img = XCreateImage(Xdisplay, osd_visual->visual, depth, ZPixmap, 0, (char*)image32, uiWidth, uiHeight, bitmap_pad, bytes_per_line);
 
             img->data = (char*)pm->Data();
 
-            Pixmap pixmap = XCreatePixmap(Xdisplay, window_handle, pm->ViewPort().Width(), pm->ViewPort().Height(), depth);
+            Pixmap pixmap = XCreatePixmap(Xdisplay, window_handle, uiWidth, uiHeight, depth);
 
 
-            int w = pm->ViewPort().Width();
-            int h = pm->ViewPort().Height();
+            int w = uiWidth;
+            int h = uiHeight;
             int X = pm->ViewPort().X();
             int Y = pm->ViewPort().Y();
             int T = Top();
             int L = Left();
 
 
-            XPutImage(Xdisplay, pixmap, osd_gc, img, 0, 0, 0, 0, pm->ViewPort().Width(), pm->ViewPort().Height());
+            XPutImage(Xdisplay, pixmap, osd_gc, img, 0, 0, 0, 0, uiWidth, uiHeight);
 
 
             XCopyArea(Xdisplay, pixmap, window_handle,osd_gc,
                         0 ,0,
-                        pm->ViewPort().Width(), pm->ViewPort().Height(),
+                        uiWidth, uiHeight,
                         L+X, T+Y);
 
             XFlush(Xdisplay);
