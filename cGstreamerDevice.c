@@ -436,6 +436,7 @@ int cGstreamerDevice::PlayTs(const uchar *Data, int Length, bool VideoOnly)
 		gst_element_set_state (appsrc, GST_STATE_NULL);
 		ilive_stream_count++;	
 		//gst_element_set_state (appsrc, GST_STATE_PLAY);
+		StartReplay();
 
 
 	}
