@@ -136,12 +136,6 @@ public:
 
 	};// end of method
 
-	cPixmap *CreatePixmap(int Layer, const cRect &ViewPort, const cRect &DrawPort)
-	{
-		g_printerr("CreatePixmap() \n");
-		return cOsd::CreatePixmap(Layer, ViewPort, DrawPort);
-	};// end of method
-
 };// end of class
 
 
