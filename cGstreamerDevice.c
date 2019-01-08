@@ -217,7 +217,7 @@ void cGstreamerDevice::Init()
 	registry = gst_registry_get();
 	if (!registry)
 		g_printerr("cPluginGstreamerdevice:ProcessArgs(): registry is null \n");
-	factory = gst_element_factory_find("vaapidecode");
+	factory = gst_element_factory_find("vaapidecodebin");
 	if(!factory)
 		g_printerr("cPluginGstreamerdevice:ProcessArgs(): factory is null \n");
 	gst_plugin_feature_set_rank(GST_PLUGIN_FEATURE(factory)
