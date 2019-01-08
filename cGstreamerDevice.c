@@ -71,7 +71,7 @@ public:
 		Osdgst = new cOsdgst(Left,  Top,  Level);
 
 
-		Osdgst->CreateWindow(win);
+		Osdgst->CreateWindow(dpy);
 
 		g_printerr("cGstreamerOsd(int Left, int Top, uint Level) : cOsd(Left, Top, Level) \n");
 	};// end of method
