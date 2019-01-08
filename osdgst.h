@@ -63,7 +63,7 @@ public:
 
 	~cOsdgst();
 
-	void *CreateWindow(Window win);
+	void *CreateWindow(Display *dpy);
 
 	int isExtensionSupported(const char * extList, const char *extension);
 
