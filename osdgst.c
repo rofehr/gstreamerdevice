@@ -164,6 +164,18 @@
 		    SubstructureRedirectMask | SubstructureNotifyMask, &xev);
 	    
         xev.xclient.window = window_handle;
+	    
+	double alpha = 0.8;
+        unsigned long opacity = (unsigned long)(0xFFFFFFFFul * alpha);
+        Atom XA_NET_WM_WINDOW_OPACITY = XInternAtom(Xdisplay, "_NET_WM_WINDOW_OPACITY", False);
+
+        XSetBackground(Xdisplay, osd_gc, 0x80808080);
+
+
+        XChangeProperty( dpy, overlay_win, 
+                         XA_NET_WM_WINDOW_OPACITY,
+			 XA_CARDINAL, 32, PropModeReplace, (unsigned char*)&opacity,1L) ;    
+	    
 	XFlush(Xdisplay);
 
         
