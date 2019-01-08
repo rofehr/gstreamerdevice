@@ -102,7 +102,7 @@ public:
 		}
 
 
-		tArea Area = { 0, 0, 1080, 1920, 32 }; 
+		tArea Area = { 0, 0, 1920, 1080, 32 }; 
 		
 		g_printerr("SetAreas(const tArea *Areas, int NumAreas) %d NumAres\n", NumAreas);
 		//return oeOk;
