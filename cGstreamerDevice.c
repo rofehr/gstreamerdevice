@@ -429,8 +429,6 @@ int cGstreamerDevice::PlayTs(const uchar *Data, int Length, bool VideoOnly)
 		}
 		g_printerr("Clear Temp-File \n");
 		ilive_stream_count++;	
-		gst_element_set_state (appsrc, GST_STATE_NULL);
-		gst_element_set_state (appsrc, GST_STATE_PLAY);
 
 	}
 	else
