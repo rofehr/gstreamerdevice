@@ -387,7 +387,6 @@ int push_to_buffer(const uchar *Data, int Length)
 int cGstreamerDevice::PlayTs(const uchar *Data, int Length, bool VideoOnly)
 {
 
-	g_printerr("PlayTs (%d)\n", ilive_stream_count);
 	
 	FILE *fd = fopen(TEMP_PATH,"a+");
 	if(fd != NULL)
@@ -415,6 +414,7 @@ int cGstreamerDevice::PlayTs(const uchar *Data, int Length, bool VideoOnly)
 			{
 				ilive_stream_count=30000;
 				remove(TEMP_PATH);
+				g_printerr("PlayTs(remove) (%d)\n", ilive_stream_count);
 				FILE *fd = fopen(TEMP_PATH,"a+");
 				if(fd != NULL)
 				{
