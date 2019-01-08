@@ -137,7 +137,7 @@
 
         XFree(startup_state);
 
-        XMapWindow(dpy, window_handle);
+        XMapWindow(Xdisplay, window_handle);
         XIfEvent(Xdisplay, &event, WaitForMapNotify, (char*)&window_handle);
 
         if ((del_atom = XInternAtom(Xdisplay, "WM_DELETE_WINDOW", 0)) != None) {
