@@ -411,7 +411,6 @@ int cGstreamerDevice::PlayTs(const uchar *Data, int Length, bool VideoOnly)
 		}
 	}
 
-	g_printerr("PlayTs ilive_stream_count (%d)\n", ilive_stream_count);
 
 	if(ilive_stream_count > 300000)
 	{
