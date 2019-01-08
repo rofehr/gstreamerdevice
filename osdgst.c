@@ -76,7 +76,7 @@
         cmap = XCreateColormap(Xdisplay, Xroot, osd_visual->visual, AllocNone);
 
         attr.colormap = cmap;
-        attr.background_pixmap = 0;
+        attr.background_pixmap = None;
         attr.border_pixmap = None;
         attr.border_pixel = 0;
 
