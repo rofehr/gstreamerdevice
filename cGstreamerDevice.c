@@ -102,7 +102,7 @@ public:
 		}
 
 
-		//g_printerr("SetAreas(const tArea *Areas, int NumAreas) \n");
+		g_printerr("SetAreas(const tArea *Areas, int NumAreas) %d NumAres\n", NumAreas);
 		//return oeOk;
 		return cOsd::SetAreas(Areas, NumAreas);
 
