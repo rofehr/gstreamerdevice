@@ -172,7 +172,7 @@ public:
 	~cGstreamerOsdProvider() {}
 };// end of class
 
-cOsd *cGstreamerOsdProvider::Osd;
+static cOsd *cGstreamerOsdProvider::Osd;
 
 
 
