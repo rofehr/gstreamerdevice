@@ -205,7 +205,7 @@ void cGstreamerDevice::Init()
 	g_object_set(filesink, "location", "/var/cache/save.ts", NULL);
 	
 	
-	sink = gst_element_factory_make ("autodetect", "sink"); 
+	sink = gst_element_factory_make ("ximagesink", "sink"); 
 	
 	bus = gst_element_get_bus(appsrc);
 	gst_bus_set_sync_handler(bus, (GstBusSyncHandler) create_window, appsrc, NULL);
