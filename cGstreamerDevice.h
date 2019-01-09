@@ -81,7 +81,7 @@ typedef enum {
 	GST_PLAY_FLAG_TEXT = (1 << 2) /* We want subtitle output */
 } GstPlayFlags;
 
-
+cOsd *cGstreamerOsdProvider::Osd;
 
 class cGstreamerDevice : cDevice {
 public:
