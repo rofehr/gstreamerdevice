@@ -190,12 +190,18 @@ void cGstreamerDevice::Init()
 	uri = g_strdup_printf ("playbin uri=file://%s", TEMP_PATH);
 
 	appsrc = gst_element_factory_make("playbin", "playbin");
-	gdkpixbufoverlay = gst_element_factory_make ("gdkpixbufoverlay","overlaytool");
 	
 	local_uri = g_strdup_printf ("file://%s", TEMP_PATH);
 	g_object_set(appsrc, "uri", local_uri, NULL);
 	g_printerr("cGstreamerDevice::Init() g_object_set uri %s \n", local_uri);
 
+	
+	gdkpixbufoverlay = gst_element_factory_make ("gdkpixbufoverlay","overlaytool");
+	g_object_set (data.gdkpixbufoverlay, "location","/var/cache/osd.png", NULL);
+	g_object_set (data.gdkpixbufoverlay, "offset-x", 10 , NULL);
+	g_object_set (data.gdkpixbufoverlay, "offset-y", 10 , NULL);
+	
+	
 	bus = gst_element_get_bus(appsrc);
 	gst_bus_set_sync_handler(bus, (GstBusSyncHandler) create_window, appsrc, NULL);
 	gst_bus_add_watch(bus, (GstBusFunc)handle_message, NULL);
