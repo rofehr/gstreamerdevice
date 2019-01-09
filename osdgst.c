@@ -34,30 +34,35 @@
     */
     void *cOsdgst::CreateWindow(Display *dpy)
     {
-        XEvent event;
+	if( dpy == NULL)
+	{
+	  g_printerr("void *cOsdgst::CreateWindow(Display *dpy) dpy == NULL");
+	}
+        
+	XEvent event;
         int x,y, attr_mask;
         XSizeHints hints;
         XWMHints *startup_state;
         XTextProperty textprop;
         XSetWindowAttributes attr = {0,};
         static char *title = "FTB's little OpenGL example - ARGB extension by WXD";
-/*
+
         Xdisplay = XOpenDisplay(NULL);
         if (!Xdisplay) {
             fatalError("Couldn't connect to X server\n");
         }
-*/
+
         Xscreen = DefaultScreen(dpy);
         Xroot = RootWindow(dpy, Xscreen);
 
         fbconfigs = glXChooseFBConfig(dpy, Xscreen, VisData, &numfbconfigs);
         fbconfig = 0;
         for(int i = 0; i<numfbconfigs; i++) {
-            osd_visual = (XVisualInfo*) glXGetVisualFromFBConfig(Xdisplay, fbconfigs[i]);
+            osd_visual = (XVisualInfo*) glXGetVisualFromFBConfig(dpy, fbconfigs[i]);
             if(!osd_visual)
                 continue;
 
-            pict_format = XRenderFindVisualFormat(Xdisplay, osd_visual->visual);
+            pict_format = XRenderFindVisualFormat(dpy, osd_visual->visual);
             if(!pict_format)
                 continue;
 
@@ -148,7 +153,7 @@
 	xev.xclient.data.l[0] = 1;
 	xev.xclient.data.l[1] = wm_fullscreen;
 	xev.xclient.data.l[2] = 0;
-	XSendEvent( dpy, DefaultRootWindow(Xdisplay), 
+	XSendEvent( dpy, DefaultRootWindow(dpy), 
                     False,
 		    SubstructureRedirectMask | SubstructureNotifyMask, &xev);
 	    
@@ -156,7 +161,7 @@
 	    
 	double alpha = 0.8;
         unsigned long opacity = (unsigned long)(0xFFFFFFFFul * alpha);
-        Atom XA_NET_WM_WINDOW_OPACITY = XInternAtom(Xdisplay, "_NET_WM_WINDOW_OPACITY", False);
+        Atom XA_NET_WM_WINDOW_OPACITY = XInternAtom(dpy, "_NET_WM_WINDOW_OPACITY", False);
 
         XSetBackground(dpy, osd_gc, 0x80808080);
 
