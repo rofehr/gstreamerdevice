@@ -508,13 +508,14 @@ void cGstreamerDevice::StartReplay()
 
 	g_printerr("StartReplay() \n");
 
+       GST_DEBUG_BIN_TO_DOT_FILE(GST_BIN(appsrc), GST_DEBUG_GRAPH_SHOW_ALL, "pipeline_graph");
+
 	if (error)
 	{
 		g_printerr("No pipeline error(%s) \n", error->message);
 	}
 	else
 	{
-	  GST_DEBUG_BIN_TO_DOT_FILE(GST_BIN(appsrc), GST_DEBUG_GRAPH_SHOW_ALL, "/var/cache/pipeline_graph");
 	}
 
 
