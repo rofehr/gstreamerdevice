@@ -28,6 +28,8 @@ static XVisualInfo vinfo;
 static Visual *visual;
 static Display *dpy = NULL;
 static GstElement *appsrc = NULL;
+static GstElement *gdkpixbufoverlay = NULL;
+
 
 static GstBus *bus = NULL;
 static GError *error = NULL;
