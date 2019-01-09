@@ -208,12 +208,12 @@ void cGstreamerDevice::Init()
 	
 	
 	sink = gst_element_factory_make ("ximagesink", "sink"); 
-	
+*/	
 	bus = gst_element_get_bus(appsrc);
 	gst_bus_set_sync_handler(bus, (GstBusSyncHandler) create_window, appsrc, NULL);
 	gst_bus_add_watch(bus, (GstBusFunc)handle_message, NULL);
 
-	
+/*	
 	bin = gst_bin_new ("sink_bin");
 	gst_bin_add_many(GST_BIN(bin), gdkpixbufoverlay, filesink,NULL);
 	gst_element_link_many(gdkpixbufoverlay, filesink,NULL);
