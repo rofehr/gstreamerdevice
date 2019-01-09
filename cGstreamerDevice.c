@@ -58,7 +58,7 @@ static void open_display(const char *display_name = NULL)
 
 class cGstreamerOsd : public cOsd {
 
-	Display *dpy;
+	//Display *dpy;
 public:
 
 	cOsdgst *Osdgst;
