@@ -205,6 +205,8 @@ void cGstreamerDevice::Init()
 	g_object_set(filesink, "location", "/var/cache/save.ts", NULL);
 	
 	
+	sink = gst_element_factory_make ("autodetect", "sink"); 
+	
 	bus = gst_element_get_bus(appsrc);
 	gst_bus_set_sync_handler(bus, (GstBusSyncHandler) create_window, appsrc, NULL);
 	gst_bus_add_watch(bus, (GstBusFunc)handle_message, NULL);
@@ -214,7 +216,7 @@ void cGstreamerDevice::Init()
 	gst_bin_add_many(GST_BIN(bin), gdkpixbufoverlay, filesink,NULL);
 	gst_element_link_many(gdkpixbufoverlay, filesink,NULL);
 		
-	g_object_set (GST_OBJECT (appsrc), "filesink", bin, NULL);
+	g_object_set (GST_OBJECT (appsrc), "sink", bin, NULL);
 	
 	/* Set flags to show Audio and Video, but ignore Subtitles */
 	gint flags;
