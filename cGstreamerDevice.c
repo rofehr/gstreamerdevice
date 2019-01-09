@@ -145,7 +145,7 @@ public:
 
 class cGstreamerOsdProvider : public cOsdProvider {
 private:
-	static cOsd *Osd;
+	//static cOsd *Osd;
 protected:
 	cOsd *CreateOsd(int Left, int Top, uint Level)
 	{
