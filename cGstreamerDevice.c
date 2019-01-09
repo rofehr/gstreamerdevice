@@ -197,7 +197,7 @@ void cGstreamerDevice::Init()
 	g_object_set(appsrc, "uri", local_uri, NULL);
 	g_printerr("cGstreamerDevice::Init() g_object_set uri %s \n", local_uri);
 
-	
+/*	
 	gdkpixbufoverlay = gst_element_factory_make ("gdkpixbufoverlay","overlaytool");
 	g_object_set (gdkpixbufoverlay, "location","/var/cache/osd.png", NULL);
 	g_object_set (gdkpixbufoverlay, "offset-x", 10 , NULL);
@@ -219,7 +219,7 @@ void cGstreamerDevice::Init()
 	gst_element_link_many(gdkpixbufoverlay, filesink,NULL);
 		
 	g_object_set (GST_OBJECT (appsrc), "sink", bin, NULL);
-	
+*/	
 	/* Set flags to show Audio and Video, but ignore Subtitles */
 	gint flags;
 	g_object_get(appsrc, "flags", &flags, NULL);
