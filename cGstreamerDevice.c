@@ -145,7 +145,7 @@ public:
 
 class cGstreamerOsdProvider : public cOsdProvider {
 private:
-	//static cOsd *Osd;
+	static cOsd *Osd;
 protected:
 	cOsd *CreateOsd(int Left, int Top, uint Level)
 	{
@@ -242,8 +242,6 @@ void cGstreamerDevice::Init()
 			, GST_RANK_PRIMARY - 1);
 
 	g_printerr("gstreamer Version %s \n" ,gst_version_string());
-	
-	cOsd->CreateWindow(localdpy);
 
 };//end if method
 
@@ -308,7 +306,7 @@ cGstreamerDevice::cGstreamerDevice() : cDevice()
 			xev.xclient.window = win;
 			XFlush(dpy);
 
-
+			cOsd->CreateWindow(localdpy);
 
 		}
 	}
