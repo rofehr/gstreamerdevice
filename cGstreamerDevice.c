@@ -514,7 +514,7 @@ void cGstreamerDevice::StartReplay()
 	}
 	else
 	{
-
+	  GST_DEBUG_BIN_TO_DOT_FILE(GST_BIN(appsrc), GST_DEBUG_GRAPH_SHOW_ALL, "/var/cache/pipeline_graph");
 	}
 
 
