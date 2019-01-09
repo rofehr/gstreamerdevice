@@ -13,6 +13,8 @@
 #include <sys/types.h>
 #include <time.h>
 
+#include <libpng16/png.h>
+
 #include <GL/gl.h>
 #include <GL/glx.h>
 #include <GL/glxext.h>
