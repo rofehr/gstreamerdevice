@@ -306,7 +306,7 @@ cGstreamerDevice::cGstreamerDevice() : cDevice()
 			xev.xclient.window = win;
 			XFlush(dpy);
 
-			cOsd->CreateWindow(localdpy);
+			cOsd->CreateWindow(dpy);
 
 		}
 	}
