@@ -58,7 +58,7 @@ static void open_display(const char *display_name = NULL)
 
 class cGstreamerOsd : public cOsd {
 
-	//Display *dpy;
+	//Display *localdpy;
 public:
 
 	cOsdgst *Osdgst;
@@ -73,7 +73,7 @@ public:
 		Osdgst = new cOsdgst(Left,  Top,  Level);
 
 
-		Osdgst->CreateWindow(dpy);
+		//Osdgst->CreateWindow(localdpy);
 
 		g_printerr("cGstreamerOsd(int Left, int Top, uint Level) : cOsd(Left, Top, Level) \n");
 	};// end of method
@@ -150,7 +150,7 @@ protected:
 	cOsd *CreateOsd(int Left, int Top, uint Level)
 	{
 
-		return Osd = new cGstreamerOsd(Left, Top, Level);
+	  return Osd = new cGstreamerOsd(Left, Top, Level);
 
 	};// end of method
 
@@ -242,6 +242,8 @@ void cGstreamerDevice::Init()
 			, GST_RANK_PRIMARY - 1);
 
 	g_printerr("gstreamer Version %s \n" ,gst_version_string());
+	
+	cOsd->CreateWindow(localdpy);
 
 };//end if method
 
