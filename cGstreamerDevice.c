@@ -197,9 +197,9 @@ void cGstreamerDevice::Init()
 
 	
 	gdkpixbufoverlay = gst_element_factory_make ("gdkpixbufoverlay","overlaytool");
-	g_object_set (data.gdkpixbufoverlay, "location","/var/cache/osd.png", NULL);
-	g_object_set (data.gdkpixbufoverlay, "offset-x", 10 , NULL);
-	g_object_set (data.gdkpixbufoverlay, "offset-y", 10 , NULL);
+	g_object_set (gdkpixbufoverlay, "location","/var/cache/osd.png", NULL);
+	g_object_set (gdkpixbufoverlay, "offset-x", 10 , NULL);
+	g_object_set (gdkpixbufoverlay, "offset-y", 10 , NULL);
 	
 	
 	bus = gst_element_get_bus(appsrc);
