@@ -29,6 +29,7 @@ static Visual *visual;
 static Display *dpy = NULL;
 static GstElement *appsrc = NULL;
 static GstElement *gdkpixbufoverlay = NULL;
+static GstElement *filesink = NULL;
 
 
 static GstBus *bus = NULL;
