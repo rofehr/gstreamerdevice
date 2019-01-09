@@ -41,15 +41,16 @@
         XTextProperty textprop;
         XSetWindowAttributes attr = {0,};
         static char *title = "FTB's little OpenGL example - ARGB extension by WXD";
-
+/*
         Xdisplay = XOpenDisplay(NULL);
         if (!Xdisplay) {
             fatalError("Couldn't connect to X server\n");
         }
-        Xscreen = DefaultScreen(Xdisplay);
-        Xroot = RootWindow(Xdisplay, Xscreen);
+*/
+        Xscreen = DefaultScreen(dpy);
+        Xroot = RootWindow(dpy, Xscreen);
 
-        fbconfigs = glXChooseFBConfig(Xdisplay, Xscreen, VisData, &numfbconfigs);
+        fbconfigs = glXChooseFBConfig(dpy, Xscreen, VisData, &numfbconfigs);
         fbconfig = 0;
         for(int i = 0; i<numfbconfigs; i++) {
             osd_visual = (XVisualInfo*) glXGetVisualFromFBConfig(Xdisplay, fbconfigs[i]);
@@ -73,7 +74,7 @@
         describe_fbconfig(fbconfig);
 
         /* Create a colormap - only needed on some X clients, eg. IRIX */
-        cmap = XCreateColormap(Xdisplay, Xroot, osd_visual->visual, AllocNone);
+        cmap = XCreateColormap(dpy, Xroot, osd_visual->visual, AllocNone);
 
         attr.colormap = cmap;
         attr.background_pixmap = 0x80ffffff;
@@ -93,24 +94,15 @@
 */
         attr_mask = CWBackPixel | CWColormap | CWBorderPixel;
 
-        window_handle = XCreateWindow( Xdisplay, Xroot, 0, 0, 1920, 1080, 24, osd_visual->depth, InputOutput, osd_visual->visual, attr_mask, &attr);
+        window_handle = XCreateWindow( dpy, Xroot, 0, 0, 1920, 1080, 24, osd_visual->depth, InputOutput, osd_visual->visual, attr_mask, &attr);
        
 
         if( !window_handle ) {
             fatalError("Couldn't create the window\n");
         }
 
-    #if USE_GLX_CREATE_WINDOW
-        fputs("glXCreateWindow ", stderr);
-        int glXattr[] = { None };
-        glX_window_handle = glXCreateWindow(Xdisplay, fbconfig, window_handle, glXattr);
-        if( !glX_window_handle ) {
-            fatalError("Couldn't create the GLX window\n");
-        }
-    #else
         glX_window_handle = window_handle;
-    #endif
-
+ 
         textprop.value = (unsigned char*)title;
         textprop.encoding = XA_STRING;
         textprop.format = 8;
@@ -126,7 +118,7 @@
         startup_state->initial_state = NormalState;
         startup_state->flags = StateHint;
 
-        XSetWMProperties(Xdisplay, window_handle,&textprop, &textprop,
+        XSetWMProperties(dpy, window_handle,&textprop, &textprop,
                 NULL, 0,
                 &hints,
                 startup_state,
@@ -134,19 +126,19 @@
 
         XFree(startup_state);
 
-        XMapWindow(Xdisplay, window_handle);
-        XIfEvent(Xdisplay, &event, WaitForMapNotify, (char*)&window_handle);
+        //XMapWindow(Xdisplay, window_handle);
+        XIfEvent(dpy, &event, WaitForMapNotify, (char*)&window_handle);
 
-        if ((del_atom = XInternAtom(Xdisplay, "WM_DELETE_WINDOW", 0)) != None) {
-            XSetWMProtocols(Xdisplay, window_handle, &del_atom, 1);
+        if ((del_atom = XInternAtom(dpy, "WM_DELETE_WINDOW", 0)) != None) {
+            XSetWMProtocols(dpy, window_handle, &del_atom, 1);
         }
         
-        osd_gc = XCreateGC(Xdisplay, window_handle, 0, 0);
+        osd_gc = XCreateGC(dpy, window_handle, 0, 0);
 
         
-        Atom wm_state = XInternAtom(Xdisplay, "_NET_WM_STATE", true);
-	Atom cmAtom = XInternAtom(Xdisplay, "_NET_WM_CM_S0", 0);    
-	Atom wm_fullscreen = XInternAtom(Xdisplay, "_NET_WM_STATE_FULLSCREEN", true);
+        Atom wm_state = XInternAtom(dpy, "_NET_WM_STATE", true);
+	Atom cmAtom = XInternAtom(dpy, "_NET_WM_CM_S0", 0);    
+	Atom wm_fullscreen = XInternAtom(dpy, "_NET_WM_STATE_FULLSCREEN", true);
 	XEvent xev;
 	memset(&xev, 0, sizeof(xev));
 	xev.type = ClientMessage;
@@ -156,7 +148,7 @@
 	xev.xclient.data.l[0] = 1;
 	xev.xclient.data.l[1] = wm_fullscreen;
 	xev.xclient.data.l[2] = 0;
-	XSendEvent( Xdisplay, DefaultRootWindow(Xdisplay), 
+	XSendEvent( dpy, DefaultRootWindow(Xdisplay), 
                     False,
 		    SubstructureRedirectMask | SubstructureNotifyMask, &xev);
 	    
@@ -166,16 +158,20 @@
         unsigned long opacity = (unsigned long)(0xFFFFFFFFul * alpha);
         Atom XA_NET_WM_WINDOW_OPACITY = XInternAtom(Xdisplay, "_NET_WM_WINDOW_OPACITY", False);
 
-        XSetBackground(Xdisplay, osd_gc, 0x80808080);
+        XSetBackground(dpy, osd_gc, 0x80808080);
 
 
-        XChangeProperty( Xdisplay, window_handle, 
+        XChangeProperty( dpy, window_handle, 
                          XA_NET_WM_WINDOW_OPACITY,
 			 XA_CARDINAL, 32, PropModeReplace, (unsigned char*)&opacity,1L) ;    
 	    
-	XFlush(Xdisplay);
-
-        
+	    
+        XMapWindow(dpy, window_handle);
+ 
+	XSync(dpy, false);
+	
+	XFlush(dpy);
+       
     }; // end of method
 
     /*
