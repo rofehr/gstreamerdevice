@@ -47,7 +47,9 @@ static void open_display(const char *display_name = NULL)
 			&& !(display_name = getenv("DISPLAY"))) {
 		display_name = ":0.0";
 	}
-
+        
+	setenv("DISPLAY", display_name, 1);
+	
 	if (!(dpy = XOpenDisplay(display_name))) {
 		g_printerr("open_display: faild to connect to X Server (%s) \n",
 				display_name);
