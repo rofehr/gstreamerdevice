@@ -190,6 +190,8 @@ void cGstreamerDevice::Init()
 	uri = g_strdup_printf ("playbin uri=file://%s", TEMP_PATH);
 
 	appsrc = gst_element_factory_make("playbin", "playbin");
+	gdkpixbufoverlay = gst_element_factory_make ("gdkpixbufoverlay","overlaytool");
+	
 	local_uri = g_strdup_printf ("file://%s", TEMP_PATH);
 	g_object_set(appsrc, "uri", local_uri, NULL);
 	g_printerr("cGstreamerDevice::Init() g_object_set uri %s \n", local_uri);
