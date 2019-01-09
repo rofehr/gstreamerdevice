@@ -210,7 +210,7 @@ void cGstreamerDevice::Init()
 	gst_bus_add_watch(bus, (GstBusFunc)handle_message, NULL);
 
 	//gst_bin_add_many(GST_BIN(appsrc), gdkpixbufoverlay, filesink);
-	//gst_element_link_many(gdkpixbufoverlay, filesink);
+	gst_element_link_many(gdkpixbufoverlay, filesink);
 		
 	/* Set flags to show Audio and Video, but ignore Subtitles */
 	gint flags;
