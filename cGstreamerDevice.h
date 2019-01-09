@@ -31,6 +31,7 @@ static GstElement *appsrc = NULL;
 static GstElement *gdkpixbufoverlay = NULL;
 static GstElement *filesink = NULL;
 static GstElement *bin = NULL;
+static GstElement *sink = NULL;
 
 
 static GstBus *bus = NULL;
