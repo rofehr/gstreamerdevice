@@ -209,9 +209,13 @@ void cGstreamerDevice::Init()
 	gst_bus_set_sync_handler(bus, (GstBusSyncHandler) create_window, appsrc, NULL);
 	gst_bus_add_watch(bus, (GstBusFunc)handle_message, NULL);
 
-	//gst_bin_add_many(GST_BIN(appsrc), gdkpixbufoverlay, filesink);
-	gst_element_link_many(gdkpixbufoverlay, filesink);
+	
+	bin = gst_bin_new ("sink_bin");
+	gst_bin_add_many(GST_BIN(bin), gdkpixbufoverlay, filesink,NULL);
+	gst_element_link_many(gdkpixbufoverlay, filesink,NULL);
 		
+	g_object_set (GST_OBJECT (appsrc), "filesink", bin, NULL);
+	
 	/* Set flags to show Audio and Video, but ignore Subtitles */
 	gint flags;
 	g_object_get(appsrc, "flags", &flags, NULL);
