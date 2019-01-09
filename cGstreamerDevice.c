@@ -149,7 +149,7 @@ private:
 protected:
 	cOsd *CreateOsd(int Left, int Top, uint Level)
 	{
-
+	  g_printerr("cOsd *CreateOsd(int Left, int Top, uint Level) \n");
 	  return Osd = new cGstreamerOsd(Left, Top, Level);
 
 	};// end of method
@@ -305,8 +305,6 @@ cGstreamerDevice::cGstreamerDevice() : cDevice()
 					SubstructureRedirectMask | SubstructureNotifyMask, &xev);
 			xev.xclient.window = win;
 			XFlush(dpy);
-
-			cOsd->CreateWindow(dpy);
 
 		}
 	}
