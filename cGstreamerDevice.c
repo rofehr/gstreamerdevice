@@ -201,6 +201,9 @@ void cGstreamerDevice::Init()
 	g_object_set (gdkpixbufoverlay, "offset-x", 10 , NULL);
 	g_object_set (gdkpixbufoverlay, "offset-y", 10 , NULL);
 	
+	filesink = gst_element_factory_make ("filesink","filesink");
+	g_object_set(filesink, "location", "/var/cache/save.ts", NULL);
+	
 	
 	bus = gst_element_get_bus(appsrc);
 	gst_bus_set_sync_handler(bus, (GstBusSyncHandler) create_window, appsrc, NULL);
