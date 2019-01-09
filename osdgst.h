@@ -55,11 +55,12 @@ static int VisData[] = {
 class cOsdgst : public cOsd {
 private:
 
+	void write_png_for_image(XImage *image, int width, int height, char *filename);
 public:
     
     Window Xroot, window_handle;
  
-	cOsdgst(int Left, int Top, uint Level); // end of method
+	cOsdgst(int Left, int Top, uint Level); 
 
 	~cOsdgst();
 
