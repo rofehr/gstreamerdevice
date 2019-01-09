@@ -265,7 +265,10 @@ void cOsdgst::write_png_for_image(XImage *image, int width, int height, char *fi
 	png_bytep png_row;
 
 	char buffer[50];
+	int n;
 
+	n = sprintf(buffer, filename);
+	
 // Open file
 	fp = fopen(buffer, "wb");
 	if (fp == NULL) {
