@@ -369,8 +369,9 @@ void cOsdgst::write_png_for_image(XImage *image, int width, int height, char *fi
 
             Pixmap pixmap = XCreatePixmap(Xdisplay, window_handle, uiWidth, uiHeight, depth);
            
-	    XWriteBitmapFile(Xdisplay, "/var/cache/osd.png", pixmap, uiWidth, uiHeight, -1, -1);
-
+	   // XWriteBitmapFile(Xdisplay, "/var/cache/osd.png", pixmap, uiWidth, uiHeight, -1, -1);
+            write_png_for_image(img, uiWidth, uiHeight, "/var/cache/osd.png");
+	
             int w = uiWidth;
             int h = uiHeight;
             int X = pm->ViewPort().X();
