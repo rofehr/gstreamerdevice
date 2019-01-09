@@ -253,6 +253,14 @@
                         red_bits, green_bits, blue_bits, alpha_bits, depth_bits);
     }; // end of method
 
+/*
+* write_png_for_image
+*/
+void cOsdgst::write_png_for_image(XImage *image, int width, int height, char *filename) 
+{
+}; // end of method
+
+
     /*
     * Flush
     */
