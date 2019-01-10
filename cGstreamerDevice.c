@@ -149,8 +149,8 @@ private:
 protected:
 	cOsd *CreateOsd(int Left, int Top, uint Level)
 	{
-	  g_printerr("cOsd *CreateOsd(int Left, int Top, uint Level) \n");
-	  return Osd = new cGstreamerOsd(Left, Top, Level);
+
+		return Osd = new cGstreamerOsd(Left, Top, Level);
 
 	};// end of method
 
@@ -197,7 +197,7 @@ void cGstreamerDevice::Init()
 	g_object_set(appsrc, "uri", local_uri, NULL);
 	g_printerr("cGstreamerDevice::Init() g_object_set uri %s \n", local_uri);
 
-/*	
+	
 	gdkpixbufoverlay = gst_element_factory_make ("gdkpixbufoverlay","overlaytool");
 	g_object_set (gdkpixbufoverlay, "location","/var/cache/osd.png", NULL);
 	g_object_set (gdkpixbufoverlay, "offset-x", 10 , NULL);
@@ -208,18 +208,18 @@ void cGstreamerDevice::Init()
 	
 	
 	sink = gst_element_factory_make ("ximagesink", "sink"); 
-*/	
+	
 	bus = gst_element_get_bus(appsrc);
 	gst_bus_set_sync_handler(bus, (GstBusSyncHandler) create_window, appsrc, NULL);
 	gst_bus_add_watch(bus, (GstBusFunc)handle_message, NULL);
 
-/*	
+	
 	bin = gst_bin_new ("sink_bin");
 	gst_bin_add_many(GST_BIN(bin), gdkpixbufoverlay, filesink,NULL);
 	gst_element_link_many(gdkpixbufoverlay, filesink,NULL);
 		
 	g_object_set (GST_OBJECT (appsrc), "sink", bin, NULL);
-*/	
+	
 	/* Set flags to show Audio and Video, but ignore Subtitles */
 	gint flags;
 	g_object_get(appsrc, "flags", &flags, NULL);
@@ -305,6 +305,8 @@ cGstreamerDevice::cGstreamerDevice() : cDevice()
 					SubstructureRedirectMask | SubstructureNotifyMask, &xev);
 			xev.xclient.window = win;
 			XFlush(dpy);
+
+
 
 		}
 	}
