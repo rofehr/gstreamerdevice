@@ -60,13 +60,6 @@ void *cOsdgst::CreateWindow(Display *dpy)
         fatalError("Couldn't connect to X server\n");
     }
     
-    
-      if (!XQueryExtension (display, COMPOSITE_NAME, &composite_request, &query_event, &query_error)) 
-      {
-        g_printerr ("Fatal Error : No Composite support on your platform\n");
-      }
-    
-    
     Xscreen = DefaultScreen(Xdisplay);
     Xroot = RootWindow(Xdisplay, Xscreen);
 
