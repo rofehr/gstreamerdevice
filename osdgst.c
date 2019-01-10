@@ -34,12 +34,7 @@
     */
     void *cOsdgst::CreateWindow(Display *dpy)
     {
-	if( dpy == NULL)
-	{
-	  g_printerr("void *cOsdgst::CreateWindow(Display *dpy) dpy == NULL\n");
-	}
-        
-	XEvent event;
+        XEvent event;
         int x,y, attr_mask;
         XSizeHints hints;
         XWMHints *startup_state;
@@ -51,7 +46,6 @@
         if (!Xdisplay) {
             fatalError("Couldn't connect to X server\n");
         }
-
         Xscreen = DefaultScreen(Xdisplay);
         Xroot = RootWindow(Xdisplay, Xscreen);
 
@@ -106,8 +100,17 @@
             fatalError("Couldn't create the window\n");
         }
 
+    #if USE_GLX_CREATE_WINDOW
+        fputs("glXCreateWindow ", stderr);
+        int glXattr[] = { None };
+        glX_window_handle = glXCreateWindow(Xdisplay, fbconfig, window_handle, glXattr);
+        if( !glX_window_handle ) {
+            fatalError("Couldn't create the GLX window\n");
+        }
+    #else
         glX_window_handle = window_handle;
- 
+    #endif
+
         textprop.value = (unsigned char*)title;
         textprop.encoding = XA_STRING;
         textprop.format = 8;
@@ -131,7 +134,7 @@
 
         XFree(startup_state);
 
-        //XMapWindow(Xdisplay, window_handle);
+        XMapWindow(Xdisplay, window_handle);
         XIfEvent(Xdisplay, &event, WaitForMapNotify, (char*)&window_handle);
 
         if ((del_atom = XInternAtom(Xdisplay, "WM_DELETE_WINDOW", 0)) != None) {
@@ -170,13 +173,9 @@
                          XA_NET_WM_WINDOW_OPACITY,
 			 XA_CARDINAL, 32, PropModeReplace, (unsigned char*)&opacity,1L) ;    
 	    
-	    
-        XMapWindow(Xdisplay, window_handle);
- 
-	XSync(Xdisplay, false);
-	
 	XFlush(Xdisplay);
-       
+
+        
     }; // end of method
 
     /*
@@ -407,4 +406,3 @@ void cOsdgst::write_png_for_image(XImage *image, int width, int height, char *fi
 		Debug("CreatePixmap() \n");
 		return cOsd::CreatePixmap(Layer, ViewPort, DrawPort);
 	};// end of method
-
