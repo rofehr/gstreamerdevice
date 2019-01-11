@@ -64,7 +64,7 @@ void *cOsdgst::CreateWindow(Display *dpy)
 
     Xscreen = DefaultScreen(Xdisplay);
     Xroot = RootWindow(Xdisplay, Xscreen);
-    /*
+
             fbconfigs = glXChooseFBConfig(Xdisplay, Xscreen, VisData, &numfbconfigs);
             fbconfig = 0;
             for(int i = 0; i<numfbconfigs; i++) {
@@ -88,8 +88,9 @@ void *cOsdgst::CreateWindow(Display *dpy)
             }
 
             describe_fbconfig(fbconfig);
-    */
 
+
+    /*
     XVisualInfo visual_template;
     XVisualInfo *visual_list;
     XVisualInfo vinfo;
@@ -112,14 +113,11 @@ void *cOsdgst::CreateWindow(Display *dpy)
 
     }
 
-    if (!XMatchVisualInfo(Xdisplay, XDefaultScreen(Xdisplay), 32, TrueColor, &vinfo))
+    if (!XMatchVisualInfo(Xdisplay, XDefaultScreen(Xdisplay), 32, TrueColor, &osd_visual))
     {
         fprintf(stderr, "no such visual\n");
     }
-    else
-    {
-        osd_visual = &vinfo;
-    }
+*/
     
     /* Create a colormap - only needed on some X clients, eg. IRIX */
     cmap = XCreateColormap(Xdisplay, Xroot, osd_visual->visual, AllocNone);
