@@ -59,33 +59,68 @@ void *cOsdgst::CreateWindow(Display *dpy)
     if (!Xdisplay) {
         fatalError("Couldn't connect to X server\n");
     }
-    
+
+
+
     Xscreen = DefaultScreen(Xdisplay);
     Xroot = RootWindow(Xdisplay, Xscreen);
+    /*
+            fbconfigs = glXChooseFBConfig(Xdisplay, Xscreen, VisData, &numfbconfigs);
+            fbconfig = 0;
+            for(int i = 0; i<numfbconfigs; i++) {
+                osd_visual = (XVisualInfo*) glXGetVisualFromFBConfig(Xdisplay, fbconfigs[i]);
+                if(!osd_visual)
+                    continue;
 
-        fbconfigs = glXChooseFBConfig(Xdisplay, Xscreen, VisData, &numfbconfigs);
-        fbconfig = 0;
-        for(int i = 0; i<numfbconfigs; i++) {
-            osd_visual = (XVisualInfo*) glXGetVisualFromFBConfig(Xdisplay, fbconfigs[i]);
-            if(!osd_visual)
-                continue;
+                pict_format = XRenderFindVisualFormat(Xdisplay, osd_visual->visual);
+                if(!pict_format)
+                    continue;
 
-            pict_format = XRenderFindVisualFormat(Xdisplay, osd_visual->visual);
-            if(!pict_format)
-                continue;
-
-             if( (pict_format->direct.alphaMask > 0) && (pict_format->depth == 32) ) {
-                fbconfig = fbconfigs[i];
-                break;
+                if( (pict_format->direct.alphaMask > 0) && (pict_format->depth == 32) ) {
+                    fbconfig = fbconfigs[i];
+                     g_printerr("FB config found %d", i);
+                    break;
+                }
             }
-        }
 
-        if(!fbconfig) {
-            g_printerr("No matching FB config found");
-        }
+            if(!fbconfig) {
+                g_printerr("No matching FB config found");
+            }
 
-        describe_fbconfig(fbconfig);
+            describe_fbconfig(fbconfig);
+    */
 
+    XVisualInfo visual_template;
+    XVisualInfo *visual_list;
+    XVisualInfo vinfo;
+    int nxvisuals;
+    int i;
+
+
+    nxvisuals = 0;
+    visual_template.screen = DefaultScreen(Xdisplay);
+    visual_list = XGetVisualInfo (Xdisplay, VisualScreenMask, &visual_template, &nxvisuals);
+
+    for (i = 0; i < nxvisuals; ++i)
+    {
+        printf("  %3d: visual 0x%lx class %d (%s) depth %d\n",
+               i,
+               visual_list[i].visualid,
+               visual_list[i].c_class,
+               visual_list[i].c_class == TrueColor ? "TrueColor" : "unknown",
+               visual_list[i].depth);
+
+    }
+
+    if (!XMatchVisualInfo(Xdisplay, XDefaultScreen(Xdisplay), 32, TrueColor, &vinfo))
+    {
+        fprintf(stderr, "no such visual\n");
+    }
+    else
+    {
+        osd_visual = &vinfo;
+    }
+    
     /* Create a colormap - only needed on some X clients, eg. IRIX */
     cmap = XCreateColormap(Xdisplay, Xroot, osd_visual->visual, AllocNone);
 
@@ -111,7 +146,7 @@ void *cOsdgst::CreateWindow(Display *dpy)
         CWEventMask;
 
     window_handle = XCreateWindow( Xdisplay, Xroot, 0, 0, 1920, 1080, 0, 32, InputOutput, osd_visual->visual, attr_mask, &attr);
-   
+
 
 
     if( !window_handle ) {
@@ -412,4 +447,4 @@ cPixmap *cOsdgst::CreatePixmap(int Layer, const cRect &ViewPort, const cRect &Dr
     Debug("CreatePixmap() \n");
     return cOsd::CreatePixmap(Layer, ViewPort, DrawPort);
 };// end of method
- 
+
