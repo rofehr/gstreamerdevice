@@ -42,42 +42,43 @@ static int osd_width, osd_height;
 static GC osd_gc;
 
 static int VisData[] = {
-		GLX_RENDER_TYPE, GLX_RGBA_BIT,
-		GLX_DRAWABLE_TYPE, GLX_WINDOW_BIT,
-		GLX_DOUBLEBUFFER, True,
-		GLX_RED_SIZE, 8,
-		GLX_GREEN_SIZE, 8,
-		GLX_BLUE_SIZE, 8,
-		GLX_ALPHA_SIZE, 8,
-		GLX_DEPTH_SIZE, 16,
-		None
+    GLX_RENDER_TYPE, GLX_RGBA_BIT,
+    GLX_DRAWABLE_TYPE, GLX_WINDOW_BIT,
+    GLX_DOUBLEBUFFER, True,
+    GLX_RED_SIZE, 8,
+    GLX_GREEN_SIZE, 8,
+    GLX_BLUE_SIZE, 8,
+    GLX_ALPHA_SIZE, 8,
+    GLX_DEPTH_SIZE, 16,
+    None
 };
 
 
 class cOsdgst : public cOsd {
 private:
 
-	void write_png_for_image(XImage *image, int width, int height, char *filename);
+    void write_png_for_image(XImage *image, int width, int height, char *filename);
+    
 public:
-    
+
     Window Xroot, window_handle;
- 
-	cOsdgst(int Left, int Top, uint Level); 
 
-	~cOsdgst();
+    cOsdgst(int Left, int Top, uint Level);
 
-	void *CreateWindow(Display *dpy);
+    ~cOsdgst();
 
-	int isExtensionSupported(const char * extList, const char *extension);
+    void *CreateWindow(Display *dpy);
 
-	void fatalError(const char *why);
+    int isExtensionSupported(const char * extList, const char *extension);
 
- 	void Debug(const char *why);
+    void fatalError(const char *why);
 
-	void describe_fbconfig(GLXFBConfig fbconfig);
-    
+    void Debug(const char *why);
+
+    void describe_fbconfig(GLXFBConfig fbconfig);
+
     void FlushOsd(cPixmapMemory *pm);
-    
+
     cPixmap *CreatePixmap(int Layer, const cRect &ViewPort, const cRect &DrawPort);
 
 }; // end of class
