@@ -279,7 +279,7 @@ cGstreamerDevice::cGstreamerDevice() : cDevice()
             XSync(dpy, false);
             XFlush(dpy);
 
-/*
+
             Atom wm_state = XInternAtom(dpy, "_NET_WM_STATE", true);
             Atom wm_fullscreen = XInternAtom(dpy, "_NET_WM_STATE_FULLSCREEN", true);
             XEvent xev;
@@ -297,7 +297,7 @@ cGstreamerDevice::cGstreamerDevice() : cDevice()
             xev.xclient.window = win;
             XFlush(dpy);
 
-*/
+
 
         }
     }
