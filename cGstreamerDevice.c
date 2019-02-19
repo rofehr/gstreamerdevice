@@ -58,7 +58,6 @@ static void open_display(const char *display_name = NULL)
 
 class cGstreamerOsd : public cOsd {
 
-    Display *dpy;
 public:
 
     cOsdgst *Osdgst;
@@ -228,12 +227,17 @@ void cGstreamerDevice::Init()
     }
 
     g_printerr("gstreamer Version %s \n" ,gst_version_string());
+    
+    #define FILE_MODE 0644
+    spipe = NULL;
+    spipe = sp_writer_create( "/tmp/tmpsock" , 366, FILE_MODE  ); 
 
 };//end if method
 
 cGstreamerDevice::cGstreamerDevice() : cDevice()
 {
     remove(TEMP_PATH);
+    remove("/tmp/tmpsock");
     g_printerr("GstreamerDevice() : cDevice() \n");
 
     Init();
@@ -275,7 +279,7 @@ cGstreamerDevice::cGstreamerDevice() : cDevice()
             XSync(dpy, false);
             XFlush(dpy);
 
-
+/*
             Atom wm_state = XInternAtom(dpy, "_NET_WM_STATE", true);
             Atom wm_fullscreen = XInternAtom(dpy, "_NET_WM_STATE_FULLSCREEN", true);
             XEvent xev;
@@ -293,7 +297,7 @@ cGstreamerDevice::cGstreamerDevice() : cDevice()
             xev.xclient.window = win;
             XFlush(dpy);
 
-
+*/
 
         }
     }
@@ -330,6 +334,7 @@ bool cGstreamerDevice::SetPlayMode(ePlayMode PlayMode)
             ilive_stream_count = 0;
             live_stream_is_runnig = FALSE;
             remove(TEMP_PATH);
+            remove("/tmp/tmpsock");
             g_printerr("SetPlayMode (%d) live_stream_is_runnig, ilive_stream_count %d\n",PlayMode, ilive_stream_count);
 
         }
@@ -422,31 +427,33 @@ int cGstreamerDevice::PlayTs(const uchar *Data, int Length, bool VideoOnly)
         }
     }
 
+    
+    GST_OBJECT_LOCK(spipe);
     /*
-    	if(ilive_stream_count > 300000)
-    	{
-    		ilive_stream_count=0;
-    		remove(TEMP_PATH);
-    		g_printerr("PlayTs(remove) (%d)\n", ilive_stream_count);
-    		FILE *fd = fopen(TEMP_PATH,"a+");
-    		if(fd != NULL)
-    		{
-    			fwrite(Data, 1, Length, fd);
-    			fclose(fd);
-    		}
-    		g_printerr("Clear Temp-File \n");
-    		gst_element_set_state (appsrc, GST_STATE_NULL);
-    		ilive_stream_count++;
-    		//gst_element_set_state (appsrc, GST_STATE_PLAY);
-    		StartReplay();
+    while(spipe->wait_for_connection && !spipe->clients)
+    {
+        g_printerr("Wait fpr Client\n");
+    }
+    */    
+    
+    if(spipe != NULL)
+    {
+        highsock = sp_get_fd(spipe);
+        ShmBlock* block = sp_writer_alloc_block (spipe, Length);
+        if(block != NULL)
+        {    
+          char* shmbuf = sp_writer_block_get_buf (block);
+          memcpy (shmbuf, Data, Length);
+          int ret = sp_writer_send_buf (spipe, shmbuf, Length,NULL);
 
+          g_printerr("sp_writer_send_buf (%d) Client\n",ret);
+        
+          sp_writer_free_block (block);
+        }
+    }
 
-    	}
-    	else
-    	{
-    		ilive_stream_count++;
-    	}
-    */
+    GST_OBJECT_UNLOCK(spipe);
+    
     return Length;
 };// end of method
 

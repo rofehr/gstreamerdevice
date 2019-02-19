@@ -59,8 +59,12 @@ void *cOsdgst::CreateWindow(Display *dpy)
     if (!Xdisplay) {
         fatalError("Couldn't connect to X server\n");
     }
+    else
+    {
+       // Xdisplay = dpy;
+    }
 
-
+    
 
     Xscreen = DefaultScreen(Xdisplay);
     Xroot = RootWindow(Xdisplay, Xscreen);
@@ -90,34 +94,7 @@ void *cOsdgst::CreateWindow(Display *dpy)
             describe_fbconfig(fbconfig);
 
 
-    /*
-    XVisualInfo visual_template;
-    XVisualInfo *visual_list;
-    XVisualInfo vinfo;
-    int nxvisuals;
-    int i;
-
-
-    nxvisuals = 0;
-    visual_template.screen = DefaultScreen(Xdisplay);
-    visual_list = XGetVisualInfo (Xdisplay, VisualScreenMask, &visual_template, &nxvisuals);
-
-    for (i = 0; i < nxvisuals; ++i)
-    {
-        printf("  %3d: visual 0x%lx class %d (%s) depth %d\n",
-               i,
-               visual_list[i].visualid,
-               visual_list[i].c_class,
-               visual_list[i].c_class == TrueColor ? "TrueColor" : "unknown",
-               visual_list[i].depth);
-
-    }
-
-    if (!XMatchVisualInfo(Xdisplay, XDefaultScreen(Xdisplay), 32, TrueColor, &osd_visual))
-    {
-        fprintf(stderr, "no such visual\n");
-    }
-*/
+  
     
     /* Create a colormap - only needed on some X clients, eg. IRIX */
     cmap = XCreateColormap(Xdisplay, Xroot, osd_visual->visual, AllocNone);
@@ -445,5 +422,4 @@ cPixmap *cOsdgst::CreatePixmap(int Layer, const cRect &ViewPort, const cRect &Dr
     Debug("CreatePixmap() \n");
     return cOsd::CreatePixmap(Layer, ViewPort, DrawPort);
 };// end of method
-
 

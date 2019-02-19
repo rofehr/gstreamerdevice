@@ -1,3 +1,7 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/mman.h>
+
 #include <vdr/config.h>
 #include <vdr/device.h>
 #include <vdr/osd.h>
@@ -23,6 +27,8 @@
 #include <GL/glx.h>
 
 #include "osdgst.h"
+
+#include "shmpipe.h"
 
 static XVisualInfo vinfo;
 static Visual *visual;
@@ -51,15 +57,15 @@ static int ilive_stream_count = 0;
 
 
 static int VisDataMain[] = {
-		GLX_RENDER_TYPE, GLX_RGBA_BIT,
-		GLX_DRAWABLE_TYPE, GLX_WINDOW_BIT,
-		GLX_DOUBLEBUFFER, True,
-		GLX_RED_SIZE, 8,
-		GLX_GREEN_SIZE, 8,
-		GLX_BLUE_SIZE, 8,
-		GLX_ALPHA_SIZE, 8,
-		GLX_DEPTH_SIZE, 16,
-		None
+    GLX_RENDER_TYPE, GLX_RGBA_BIT,
+    GLX_DRAWABLE_TYPE, GLX_WINDOW_BIT,
+    GLX_DOUBLEBUFFER, True,
+    GLX_RED_SIZE, 8,
+    GLX_GREEN_SIZE, 8,
+    GLX_BLUE_SIZE, 8,
+    GLX_ALPHA_SIZE, 8,
+    GLX_DEPTH_SIZE, 16,
+    None
 };
 
 
@@ -76,59 +82,61 @@ static int VisDataMain[] = {
 
 /* playbin flags */
 typedef enum {
-	GST_PLAY_FLAG_VIDEO = (1 << 0), /* We want to play vidoe output */
-	GST_PLAY_FLAG_AUDIO = (1 << 1), /* We want to play audio ourput */
-	GST_PLAY_FLAG_TEXT = (1 << 2) /* We want subtitle output */
+    GST_PLAY_FLAG_VIDEO = (1 << 0), /* We want to play vidoe output */
+    GST_PLAY_FLAG_AUDIO = (1 << 1), /* We want to play audio ourput */
+    GST_PLAY_FLAG_TEXT = (1 << 2) /* We want subtitle output */
 } GstPlayFlags;
 
 
 class cGstreamerDevice : cDevice {
 public:
 
-	cGstreamerDevice();
+    cGstreamerDevice();
 
-	~cGstreamerDevice();
+    ~cGstreamerDevice();
 
-	void Init();
+    void Init();
 
-	bool HasDecoder(void) const;
-	
-	bool CanReplay(void) const;
+    bool HasDecoder(void) const;
 
-	bool SetPlayMode(ePlayMode PlayMode);
+    bool CanReplay(void) const;
 
-	int PlayVideo(const uchar *Data, int Length);
+    bool SetPlayMode(ePlayMode PlayMode);
 
-	int PlayAudio(const uchar *Data, int Length, uchar Id);
+    int PlayVideo(const uchar *Data, int Length);
 
-	int PlayTsVideo(const uchar *Data, int Length);
+    int PlayAudio(const uchar *Data, int Length, uchar Id);
 
-	int PlayTsAudio(const uchar *Data, int Length);
+    int PlayTsVideo(const uchar *Data, int Length);
 
-	int PlayTsSubtitle(const uchar *Data, int Length);
+    int PlayTsAudio(const uchar *Data, int Length);
 
-	int PlayPes(const uchar *Data, int Length, bool VideoOnly = false);
+    int PlayTsSubtitle(const uchar *Data, int Length);
 
-	int push_to_buffer(const uchar *Data, int Length);
+    int PlayPes(const uchar *Data, int Length, bool VideoOnly = false);
 
-	int PlayTs(const uchar *Data, int Length, bool VideoOnly = false);
+    int push_to_buffer(const uchar *Data, int Length);
 
-	bool Poll(cPoller &Poller, int TimeoutMs = 0);
+    int PlayTs(const uchar *Data, int Length, bool VideoOnly = false);
 
-	bool Flush(int TimeoutMs = 0);
+    bool Poll(cPoller &Poller, int TimeoutMs = 0);
 
-	bool Start(void);
+    bool Flush(int TimeoutMs = 0);
 
-	void StartReplay();
+    bool Start(void);
+
+    void StartReplay();
 
 protected:
 
-	void MakePrimaryDevice(bool On);
+    void MakePrimaryDevice(bool On);
 
-	void StartReplayBuffer();
+    void StartReplayBuffer();
 
-	void ShowOverlay();
-
-
+    void ShowOverlay();
+    
+    ShmPipe* spipe;
+    int highsock;
+    GstElement *src;
 };
 
