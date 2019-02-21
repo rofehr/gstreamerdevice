@@ -80,7 +80,7 @@ void *cOsdgst::CreateWindow(Display *dpy)
                 if(!pict_format)
                     continue;
 
-                if( (pict_format->direct.alphaMask > 0) && (pict_format->depth = 32) ) {
+                if( (pict_format->direct.alphaMask > 0) && (pict_format->depth = 24) ) {
                     fbconfig = fbconfigs[i];
                      g_printerr("FB config found %d", i);
                     break;
@@ -168,7 +168,7 @@ void *cOsdgst::CreateWindow(Display *dpy)
     xev.type = ClientMessage;
     xev.xclient.window = window_handle;
     xev.xclient.message_type = wm_state;
-    xev.xclient.format = 32;
+    xev.xclient.format = 24;
     xev.xclient.data.l[0] = 1;
     xev.xclient.data.l[1] = wm_fullscreen;
     xev.xclient.data.l[2] = 0;
@@ -187,7 +187,7 @@ void *cOsdgst::CreateWindow(Display *dpy)
 
     XChangeProperty( Xdisplay, window_handle,
                      XA_NET_WM_WINDOW_OPACITY,
-                     XA_CARDINAL, 32, PropModeReplace, (unsigned char*)&opacity,1L) ;
+                     XA_CARDINAL, 24, PropModeReplace, (unsigned char*)&opacity,1L) ;
 
     XFlush(Xdisplay);
 
