@@ -495,7 +495,7 @@ int cGstreamerDevice::PlayTs(const uchar *Data, int Length, bool VideoOnly)
     
         
     
-    
+/*    
     if(spipe == NULL)
     {    
       #define FILE_MODE 0644
@@ -532,7 +532,7 @@ int cGstreamerDevice::PlayTs(const uchar *Data, int Length, bool VideoOnly)
         
     }
 
-    
+ */   
 
     
     return Length;
