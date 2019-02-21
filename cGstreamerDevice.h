@@ -32,6 +32,8 @@
 
 #include "shmpipe.h"
 
+#include <string>         // std::string
+
 static XVisualInfo vinfo;
 static Visual *visual;
 static Display *dpy = NULL;

@@ -64,6 +64,11 @@ void cFilebrowser::ShowDirectory(string Path)
 
   for (unsigned int i=0; i<Files.size(); i++)
     AddItem(Path, Files[i], false);
+  
+  // Test
+  // ToDo Liste Dynamisch füllen
+  AddItem("http://nrodl.zdf.de/none/3sat/19/02/190220_teufelskraut_oder_wunderbluete_ard/1/190220_teufelskraut_oder_wunderbluete_ard_2328k_p35v13.mp4", "Stream - Cannabis als Medizin", false);
+  
 
   string MenuTitle = "Filebrowser";
   if (rootDir != Path)
@@ -90,11 +95,28 @@ eOSState cFilebrowser::ProcessKey(eKeys Key)
   string newPath = "";
   cFilebrowserMenuItem *item;
   eOSState State;
+
+  std::string str2 ("http");
+  std::string temp;
+  std::size_t found;
+
   switch (Key)
   {
     case kOk:
       item = (cFilebrowserMenuItem *) Get(Current());
-      newPath = item->Path() + "/" + item->Text();
+    
+      
+      temp = item->Path();
+      found = temp.find(str2);
+      if (found!=std::string::npos)
+      {
+        newPath = item->Path();
+      }
+      else
+      {
+        newPath = item->Path() + "/" + item->Text();
+      }
+  
       if (item->IsDirectory())
       {
         currentDir = newPath;

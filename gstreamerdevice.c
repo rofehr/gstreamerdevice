@@ -82,7 +82,7 @@ cOsdObject *cPluginGstreamerdevice::MainMenuAction(void)
     return new cMpvMenuOptions(cMpvPlayer::Player());
   return new cMpvFilebrowser(MpvPluginConfig->BrowserRoot, MpvPluginConfig->DiscDevice);
   */
-    return new cFilebrowser("/home/roland/Filme", "");
+    return new cFilebrowser("/", "");
 }// end of method
 
 bool cPluginGstreamerdevice::Initialize(void)

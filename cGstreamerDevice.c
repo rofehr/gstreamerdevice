@@ -589,7 +589,7 @@ void cGstreamerDevice::StartReplay()
 
     g_printerr("StartReplay() \n");
 
-    GST_DEBUG_BIN_TO_DOT_FILE(GST_BIN(appsrc), GST_DEBUG_GRAPH_SHOW_ALL, "pipeline_graph");
+    //GST_DEBUG_BIN_TO_DOT_FILE(GST_BIN(appsrc), GST_DEBUG_GRAPH_SHOW_ALL, "pipeline_graph");
 
     if (error)
     {
@@ -611,14 +611,27 @@ void cGstreamerDevice::ReplayPlayFile(char* Filename)
     
     gst_element_set_state (appsrc, GST_STATE_NULL);
     
-    local_uri = g_strdup_printf ("file://%s", Filename);
+    std::string str2 ("http");
+    std::string temp = Filename;
+    std::size_t found = temp.find(str2);
+    if (found!=std::string::npos)
+    {
+        local_uri = Filename;
+    }
+    else
+    {
+        local_uri = g_strdup_printf ("file://%s", Filename);
+    }
+    
+    //Test
+    //local_uri ="http://nrodl.zdf.de/none/3sat/19/02/190220_teufelskraut_oder_wunderbluete_ard/1/190220_teufelskraut_oder_wunderbluete_ard_2328k_p35v13.mp4";
     g_object_set(appsrc, "uri", local_uri, NULL);
     
     gst_element_set_state (appsrc, GST_STATE_PLAYING);
 
     g_printerr("ReplayPlayFile() \n");
 
-    GST_DEBUG_BIN_TO_DOT_FILE(GST_BIN(appsrc), GST_DEBUG_GRAPH_SHOW_ALL, "pipeline_graph");
+    //GST_DEBUG_BIN_TO_DOT_FILE(GST_BIN(appsrc), GST_DEBUG_GRAPH_SHOW_ALL, "pipeline_graph");
 
     if (error)
     {

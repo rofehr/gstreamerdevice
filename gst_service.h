@@ -1,12 +1,4 @@
 
-//////////////////////////////////////////////////////////////////////////////
-///                                                                        ///
-/// This file is part of the VDR mpv plugin and licenced under AGPLv3      ///
-///                                                                        ///
-/// See the README file for copyright information                          ///
-///                                                                        ///
-//////////////////////////////////////////////////////////////////////////////
-
 #ifndef __GST_SERVICE_H
 #define __GST_SERVICE_H
 
