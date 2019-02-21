@@ -120,8 +120,8 @@ void *cOsdgst::CreateWindow(Display *dpy)
         CWBorderPixel|
         CWEventMask;
 
-    window_handle = XCreateWindow( Xdisplay, Xroot, 0, 0, 1920, 1080, 0, 32, InputOutput, osd_visual->visual, attr_mask, &attr);
-
+    //window_handle = XCreateWindow( Xdisplay, Xroot, 0, 0, 1920, 1080, 0, 32, InputOutput, osd_visual->visual, attr_mask, &attr);
+    window_handle = XCreateWindow( Xdisplay, Xroot, 0, 0, 1920, 1080, 0, 24, InputOutput, osd_visual->visual, attr_mask, &attr);
 
 
     if( !window_handle ) {
