@@ -577,6 +577,10 @@ void cGstreamerDevice::ShowOverlay()
 
 void cGstreamerDevice::StartReplay()
 {
+    gst_element_set_state (appsrc, GST_STATE_NULL);
+    
+    local_uri = g_strdup_printf ("file://%s", TEMP_PATH);
+    g_object_set(appsrc, "uri", local_uri, NULL);
 
     g_printerr(local_uri);
     g_printerr("\n");
