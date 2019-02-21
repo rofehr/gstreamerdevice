@@ -1,5 +1,7 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include <stdio.h>
+
+#include <stdlib.h>
+
 #include <sys/mman.h>
 
 #include <vdr/config.h>
@@ -39,6 +41,15 @@ static GstElement *filesink = NULL;
 static GstElement *bin = NULL;
 static GstElement *sink = NULL;
 
+
+static GstBus *pipebus = NULL;
+static Display *pipedpy = NULL;
+static Window pipewin = 0;
+static ShmPipe* spipe = NULL;
+static GstElement *pipesrc = NULL;
+
+    
+    
 
 static GstBus *bus = NULL;
 static GError *error = NULL;
@@ -126,17 +137,20 @@ public:
     bool Start(void);
 
     void StartReplay();
+    
+    void ReplayPlayFile(char* Filename);
 
 protected:
 
     void MakePrimaryDevice(bool On);
 
+private:    
     void StartReplayBuffer();
 
     void ShowOverlay();
     
-    ShmPipe* spipe;
-    int highsock;
-    GstElement *src;
+    bool CreateShmSrc();
+   
+
 };
 

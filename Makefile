@@ -59,7 +59,7 @@ DEFINES += -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
 
 ### The object files (add further files here):
 
-OBJS = $(PLUGIN).o osdgst.o cGstreamerDevice.o shmpipe.o shmalloc.o
+OBJS = $(PLUGIN).o osdgst.o cGstreamerDevice.o shmpipe.o shmalloc.o filebrowser.o
 
 ### The main target:
 

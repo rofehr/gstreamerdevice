@@ -1,6 +1,45 @@
 #include "cGstreamerDevice.h"
 
 
+static gboolean handle_message_shm(GstBus *bus, GstMessage *msg)
+{
+    GError *err;
+    gchar *debug_info;
+
+    switch (GST_MESSAGE_TYPE(msg)) {
+    case GST_MESSAGE_ERROR:
+        gst_message_parse_error(msg, &err, &debug_info);
+        g_printerr("Error received fro element %s: %s\n",
+                   GST_OBJECT_NAME(msg->src), err->message);
+        break;
+    case GST_MESSAGE_STATE_CHANGED:
+        g_printerr("GST_MESSAGE_STATE_CHANGED \n");
+        break;
+    default:
+        break;
+    };
+    return 0;
+};// end of function
+
+
+static GstBusSyncReply create_window_shm(GstBus *bus, GstMessage *message, GstPipeline *pipeline)
+{
+
+    if (!gst_is_video_overlay_prepare_window_handle_message(message))
+        return GST_BUS_PASS;
+
+    XSync(pipedpy, false);
+
+    gst_video_overlay_set_window_handle(
+        GST_VIDEO_OVERLAY(GST_MESSAGE_SRC(message)), pipewin);
+
+    gst_message_unref(message);
+
+
+    return GST_BUS_DROP;
+};// end of function
+
+
 static gboolean handle_message(GstBus *bus, GstMessage *msg)
 {
     GError *err;
@@ -102,12 +141,8 @@ public:
             }
         }
 
-
-        //tArea Area = { 0, 0, 1920, 1080, 32 };
-
         g_printerr("SetAreas(const tArea *Areas, int NumAreas) %d NumAres\n", NumAreas);
-        //return oeOk;
-        //return cOsd::SetAreas(&Area, NumAreas);
+
         return cOsd::SetAreas(Areas, NumAreas);
 
     };// end of method
@@ -176,8 +211,37 @@ cOsd *cGstreamerOsdProvider::Osd;
 
 
 
+bool cGstreamerDevice::CreateShmSrc()
+{
+    //shmsrc socket-path=/tmp/tmpsock is-live=1 
+
+  if (!pipesrc)
+  {
+    pipesrc = gst_element_factory_make ("shmsrc", NULL);
+  }
+    
+    if (!pipesrc)
+    { 
+      g_printerr("cGstreamerDevice::CreateShmSrc() Could not make shmsrc \n");
+    }
+    
+    g_object_set (pipesrc, "socket-path", "/tmp/tmpsock", "do-timestamp", TRUE, "is-live", TRUE, NULL);
+    
+/*
+    pipebus = gst_element_get_bus(pipesrc);
+    gst_bus_set_sync_handler(pipebus, (GstBusSyncHandler) create_window, pipesrc, NULL);
+    gst_bus_add_watch(pipebus, (GstBusFunc)handle_message, NULL);
+*/
+    
+}; // end of method
+
+
+
 void cGstreamerDevice::Init()
 {
+    pipesrc = NULL;
+    spipe = NULL;
+    
     g_printerr("void cGstreamerDevice::Init() \n");
 
     setenv("GST_VAAPI_ALL_DRIVERS", "1", 1);
@@ -196,6 +260,7 @@ void cGstreamerDevice::Init()
     g_object_set(appsrc, "uri", local_uri, NULL);
     g_printerr("cGstreamerDevice::Init() g_object_set uri %s \n", local_uri);
 
+    
     bus = gst_element_get_bus(appsrc);
     gst_bus_set_sync_handler(bus, (GstBusSyncHandler) create_window, appsrc, NULL);
     gst_bus_add_watch(bus, (GstBusFunc)handle_message, NULL);
@@ -228,9 +293,6 @@ void cGstreamerDevice::Init()
 
     g_printerr("gstreamer Version %s \n" ,gst_version_string());
     
-    #define FILE_MODE 0644
-    spipe = NULL;
-    spipe = sp_writer_create( "/tmp/tmpsock" , 366, FILE_MODE  ); 
 
 };//end if method
 
@@ -279,7 +341,7 @@ cGstreamerDevice::cGstreamerDevice() : cDevice()
             XSync(dpy, false);
             XFlush(dpy);
 
-
+/*
             Atom wm_state = XInternAtom(dpy, "_NET_WM_STATE", true);
             Atom wm_fullscreen = XInternAtom(dpy, "_NET_WM_STATE_FULLSCREEN", true);
             XEvent xev;
@@ -296,8 +358,9 @@ cGstreamerDevice::cGstreamerDevice() : cDevice()
                         SubstructureRedirectMask | SubstructureNotifyMask, &xev);
             xev.xclient.window = win;
             XFlush(dpy);
-
-
+*/
+            pipedpy = dpy;
+            pipewin = win;
 
         }
     }
@@ -334,8 +397,10 @@ bool cGstreamerDevice::SetPlayMode(ePlayMode PlayMode)
             ilive_stream_count = 0;
             live_stream_is_runnig = FALSE;
             remove(TEMP_PATH);
-            remove("/tmp/tmpsock");
             g_printerr("SetPlayMode (%d) live_stream_is_runnig, ilive_stream_count %d\n",PlayMode, ilive_stream_count);
+            
+            gst_element_set_state (pipesrc, GST_STATE_NULL);
+            remove("/tmp/tmpsock");
 
         }
         break;
@@ -428,17 +493,26 @@ int cGstreamerDevice::PlayTs(const uchar *Data, int Length, bool VideoOnly)
     }
 
     
-    GST_OBJECT_LOCK(spipe);
-    /*
-    while(spipe->wait_for_connection && !spipe->clients)
-    {
-        g_printerr("Wait fpr Client\n");
-    }
-    */    
+        
     
+    
+    if(spipe == NULL)
+    {    
+      #define FILE_MODE 0644
+      spipe = sp_writer_create( "/tmp/tmpsock" , 366, FILE_MODE  ); 
+    }  
+
+    // shmsrc erzeugen
+    if(pipesrc == NULL)
+    {
+      CreateShmSrc();
+    }
+
+    
+
+
     if(spipe != NULL)
     {
-        highsock = sp_get_fd(spipe);
         ShmBlock* block = sp_writer_alloc_block (spipe, Length);
         if(block != NULL)
         {    
@@ -446,13 +520,20 @@ int cGstreamerDevice::PlayTs(const uchar *Data, int Length, bool VideoOnly)
           memcpy (shmbuf, Data, Length);
           int ret = sp_writer_send_buf (spipe, shmbuf, Length,NULL);
 
-          g_printerr("sp_writer_send_buf (%d) Client\n",ret);
+          //g_printerr("sp_writer_send_buf (%d) Client\n",ret);
         
           sp_writer_free_block (block);
+          if(!live_stream_is_runnig)
+          {
+              gst_element_set_state (pipesrc, GST_STATE_PLAYING);
+              live_stream_is_runnig = TRUE;
+          }
         }
+        
     }
 
-    GST_OBJECT_UNLOCK(spipe);
+    
+
     
     return Length;
 };// end of method
@@ -517,4 +598,32 @@ void cGstreamerDevice::StartReplay()
 
 };// end of method
 
+
+void cGstreamerDevice::ReplayPlayFile(char* Filename)
+{
+
+    g_printerr(Filename);
+    g_printerr("\n");
+    
+    gst_element_set_state (appsrc, GST_STATE_NULL);
+    
+    local_uri = g_strdup_printf ("file://%s", Filename);
+    g_object_set(appsrc, "uri", local_uri, NULL);
+    
+    gst_element_set_state (appsrc, GST_STATE_PLAYING);
+
+    g_printerr("ReplayPlayFile() \n");
+
+    GST_DEBUG_BIN_TO_DOT_FILE(GST_BIN(appsrc), GST_DEBUG_GRAPH_SHOW_ALL, "pipeline_graph");
+
+    if (error)
+    {
+        g_printerr("No pipeline error(%s) \n", error->message);
+    }
+    else
+    {
+    }
+
+
+};// end of method
 
