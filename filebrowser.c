@@ -27,7 +27,7 @@ cFilebrowser::cFilebrowser(string RootDir, string DiscDevice)
   if (currentDir == "")
     currentDir = rootDir;
   ShowDirectory(currentDir);
-}
+};// end of method
 
 void cFilebrowser::ShowDirectory(string Path)
 {
@@ -80,7 +80,7 @@ void cFilebrowser::ShowDirectory(string Path)
   SetHelp(NULL, NULL, "Shuffle", NULL);
 #endif
   Display();
-}
+};// end of method
 
 void cFilebrowser::AddItem(string Path, string Text, bool IsDir)
 {
@@ -88,7 +88,7 @@ void cFilebrowser::AddItem(string Path, string Text, bool IsDir)
   if (currentItem == Text)
     Current = true;
   Add(new cFilebrowserMenuItem(Path, Text, IsDir), Current);
-}
+};// end of method
 
 eOSState cFilebrowser::ProcessKey(eKeys Key)
 {
@@ -172,7 +172,7 @@ eOSState cFilebrowser::ProcessKey(eKeys Key)
   }
 
   return cOsdMenu::ProcessKey(Key);
-}
+};// end of method
 
 bool cFilebrowser::PlayFile(string Filename, bool Shuffle)
 {
@@ -198,7 +198,7 @@ bool cFilebrowser::PlayFile(string Filename, bool Shuffle)
 */
   // should never be reached, but silence a compiler warning
   return false;
-}
+};// end of method
 
 // returns true if play is started, false otherwise
 bool cFilebrowser::PlayDisc()
@@ -251,7 +251,7 @@ bool cFilebrowser::PlayDisc()
   }
 #endif
 return false;
-}
+};// end of method
 
 bool cFilebrowser::Mount(string Path)
 {
@@ -275,7 +275,7 @@ bool cFilebrowser::Mount(string Path)
     return true;
 #endif
   return false;
-}
+};// end of method
 
 bool cFilebrowser::Unmount()
 {
@@ -287,12 +287,12 @@ bool cFilebrowser::Unmount()
     return true;
 #endif
   return false;
-}
+};// end of method
 
 cFilebrowserMenuItem::cFilebrowserMenuItem(string Path, string Item, bool IsDir)
 {
   isDir = IsDir;
   path = Path;
   SetText(Item.c_str());
-}
+};// end of method
 

@@ -33,17 +33,22 @@ private:
     void PlayFileHandleType(char* Filename, bool Shuffle=false);
 
 public:
-    cPluginGstreamerdevice(void) {}
-    virtual ~cPluginGstreamerdevice() {}
+    cPluginGstreamerdevice(void) {};
+    
+    virtual ~cPluginGstreamerdevice() {};
+    
     virtual const char *Version(void) {
         return VERSION;
-    }
+    };
+    
     virtual const char *Description(void) {
         return DESCRIPTION;
-    }
+    };
+    
     virtual const char *CommandLineHelp(void) {
         return NULL;
-    }
+    };
+    
     bool ProcessArgs(int argc, char *argv[])
     {
         return true;
@@ -57,17 +62,19 @@ public:
 
     };// end of method
 
-    virtual void Housekeeping(void) {}
+    virtual void Housekeeping(void) {};
+    
     virtual const char *MainMenuEntry(void) {
         return "GST-Player";
-    }
+    };
 
     virtual cOsdObject *MainMenuAction(void);
 
     
     virtual cMenuSetupPage *SetupMenu(void) {
         return NULL;
-    }
+    };
+    
     virtual bool SetupParse(const char *Name, const char *Value) {
         return false;
     };
@@ -77,11 +84,6 @@ public:
 
 cOsdObject *cPluginGstreamerdevice::MainMenuAction(void)
 {
-    /*
-  if (cMpvPlayer::PlayerIsRunning())
-    return new cMpvMenuOptions(cMpvPlayer::Player());
-  return new cMpvFilebrowser(MpvPluginConfig->BrowserRoot, MpvPluginConfig->DiscDevice);
-  */
     return new cFilebrowser("/", "");
 }// end of method
 
@@ -92,7 +94,7 @@ bool cPluginGstreamerdevice::Initialize(void)
     player = new cGstreamerDevice();
 
     return true;
-}
+}// end of method
 
 bool cPluginGstreamerdevice::Service(const char *id, void *data)
 {
@@ -153,7 +155,7 @@ bool cPluginGstreamerdevice::Service(const char *id, void *data)
   }
 */  
   return false;
-}
+}// end of method
 
 bool cPluginGstreamerdevice::IsIsoImage(char* Filename)
 {
@@ -172,7 +174,7 @@ bool cPluginGstreamerdevice::IsIsoImage(char* Filename)
   }
 */
   return false;
-}
+}// end of method
 
 
 void cPluginGstreamerdevice::PlayFileHandleType(char* Filename, bool Shuffle)
@@ -184,7 +186,7 @@ void cPluginGstreamerdevice::PlayFileHandleType(char* Filename, bool Shuffle)
   }
 */  
   player->ReplayPlayFile(Filename );
-}
+}// end of method
 
 
 VDRPLUGINCREATOR(cPluginGstreamerdevice); // Don't touch this!

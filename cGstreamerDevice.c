@@ -206,9 +206,8 @@ public:
     ~cGstreamerOsdProvider() {}
 };// end of class
 
+
 cOsd *cGstreamerOsdProvider::Osd;
-
-
 
 
 bool cGstreamerDevice::CreateShmSrc()
