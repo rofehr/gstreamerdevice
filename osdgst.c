@@ -103,7 +103,7 @@ void *cOsdgst::CreateWindow(Display *dpy)
     attr.background_pixmap = None;
     attr.border_pixmap = None;
     attr.border_pixel = 0;
-
+/*
     attr.event_mask =
         StructureNotifyMask |
         EnterWindowMask |
@@ -114,8 +114,16 @@ void *cOsdgst::CreateWindow(Display *dpy)
         OwnerGrabButtonMask |
         KeyPressMask |
         KeyReleaseMask;
+*/
 
-    attr_mask =
+    attr.event_mask =
+        StructureNotifyMask |
+        EnterWindowMask |
+        LeaveWindowMask |
+        ExposureMask |
+        OwnerGrabButtonMask ;
+
+     attr_mask =
         CWColormap|
         CWBorderPixel|
         CWEventMask;
