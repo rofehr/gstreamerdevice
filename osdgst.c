@@ -120,8 +120,7 @@ void *cOsdgst::CreateWindow(Display *dpy)
         StructureNotifyMask |
         EnterWindowMask |
         LeaveWindowMask |
-        ExposureMask |
-        OwnerGrabButtonMask ;
+        ExposureMask;
 
      attr_mask =
         CWColormap|
