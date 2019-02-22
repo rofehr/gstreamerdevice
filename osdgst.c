@@ -103,7 +103,6 @@ void *cOsdgst::CreateWindow(Display *dpy)
     attr.background_pixmap = None;
     attr.border_pixmap = None;
     attr.border_pixel = 0;
-/*
     attr.event_mask =
         StructureNotifyMask |
         EnterWindowMask |
@@ -114,24 +113,14 @@ void *cOsdgst::CreateWindow(Display *dpy)
         OwnerGrabButtonMask |
         KeyPressMask |
         KeyReleaseMask;
-*/
 
-    attr.event_mask =
-        StructureNotifyMask |
-        EnterWindowMask |
-        LeaveWindowMask |
-        ExposureMask;
-
-     attr_mask =
+    attr_mask =
         CWColormap|
         CWBorderPixel|
         CWEventMask;
     
-    XVisualInfo visualinfo ;
-    XMatchVisualInfo(Xdisplay, DefaultScreen(Xdisplay), 32, TrueColor, &visualinfo);
     
     window_handle = XCreateWindow( Xdisplay, Xroot, 0, 0, 1920, 1080, 0, 32, InputOutput, osd_visual->visual, attr_mask, &attr);
-    //window_handle = XCreateWindow( Xdisplay, Xroot, 0, 0, 1920, 1080, 0, 32, InputOutput, visualinfo.visual, attr_mask, &attr);
 
 
     if( !window_handle ) {
@@ -415,28 +404,43 @@ void cOsdgst::FlushOsd(cPixmapMemory *pm)
     
     
        //cairo stuff...
-   cairo_surface_t *surface_dest = cairo_xlib_surface_create( Xdisplay,
+/*
+  cairo_surface_t *surface_dest = cairo_xlib_surface_create( Xdisplay,
                                                               window_handle, 
                                                               osd_visual->visual, 
-                                                              uiWidth*2, 
-                                                              uiHeight*2);
+                                                              uiWidth*32, 
+                                                              uiHeight*32);
+*/
+
+  cairo_surface_t *surface_dest = cairo_xlib_surface_create( Xdisplay,
+                                                              window_handle, 
+                                                              osd_visual->visual, 
+                                                              1920, 
+                                                              1080);
+
+
    cairo_t *cr_dest = cairo_create(surface_dest);
 
    cairo_surface_t *surface_source =
    cairo_image_surface_create_for_data( (unsigned char*)(img->data),
-                                        CAIRO_FORMAT_RGB24, 
+                                        CAIRO_FORMAT_ARGB32, 
                                         img->width, 
                                         img->height, 
                                         img->bytes_per_line);
    
+   /*
+   cairo_scale(cr_dest, ((double)uiWidth / img->width)*2 , ((double)uiHeight / img->height)*2 );
+   */
+   double factor =(double) (1920 / img->width);
+   
    cairo_scale(cr_dest, ((double)uiWidth / img->width)*2 , ((double)uiHeight / img->height)*2 );
 
   
-   cairo_set_source_surface(cr_dest, surface_source, 0, 0);
+   cairo_set_source_surface(cr_dest, surface_source, L+X, T+Y);
    cairo_paint(cr_dest);
    cairo_surface_destroy(surface_source);
    cairo_surface_destroy(surface_dest);
-   cairo_surface_destroy(surface_source);
+   //cairo_surface_destroy(surface_source);
     
     
     
