@@ -23,6 +23,8 @@
 
 #include <X11/Xatom.h>
 #include <X11/extensions/Xrender.h>
+#include <cairo/cairo.h>
+#include <cairo/cairo-xlib.h>
 #include <X11/Xutil.h>
 
 #include <vdr/config.h>

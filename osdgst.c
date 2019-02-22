@@ -119,15 +119,19 @@ void *cOsdgst::CreateWindow(Display *dpy)
         CWColormap|
         CWBorderPixel|
         CWEventMask;
-
+    
+    XVisualInfo visualinfo ;
+    XMatchVisualInfo(Xdisplay, DefaultScreen(Xdisplay), 32, TrueColor, &visualinfo);
+    
     window_handle = XCreateWindow( Xdisplay, Xroot, 0, 0, 1920, 1080, 0, 32, InputOutput, osd_visual->visual, attr_mask, &attr);
+    //window_handle = XCreateWindow( Xdisplay, Xroot, 0, 0, 1920, 1080, 0, 32, InputOutput, visualinfo.visual, attr_mask, &attr);
 
 
     if( !window_handle ) {
         fatalError("Couldn't create the window\n");
     }
 
-
+/*
     textprop.value = (unsigned char*)title;
     textprop.encoding = XA_STRING;
     textprop.format = 8;
@@ -148,7 +152,7 @@ void *cOsdgst::CreateWindow(Display *dpy)
                      NULL);
 
     XFree(startup_state);
-
+*/
     XMapWindow(Xdisplay, window_handle);
     XIfEvent(Xdisplay, &event, WaitForMapNotify, (char*)&window_handle);
 
@@ -376,24 +380,21 @@ void cOsdgst::FlushOsd(cPixmapMemory *pm)
     unsigned int uiWidth = pm->ViewPort().Width();
     unsigned int uiHeight = pm->ViewPort().Height();
 
+    
     unsigned char *image32=(unsigned char *)malloc(uiWidth*uiHeight*4);
 
     XImage *img = XCreateImage(Xdisplay, osd_visual->visual, depth, ZPixmap, 0, (char*)image32, uiWidth, uiHeight, bitmap_pad, bytes_per_line);
 
     img->data = (char*)pm->Data();
 
-    Pixmap pixmap = XCreatePixmap(Xdisplay, window_handle, uiWidth, uiHeight, depth);
+    Pixmap pixmap = XCreatePixmap(Xdisplay, window_handle, uiWidth*2, uiHeight*2, depth);
 
-    // XWriteBitmapFile(Xdisplay, "/var/cache/osd.png", pixmap, uiWidth, uiHeight, -1, -1);
-    //write_png_for_image(img, uiWidth, uiHeight, "/var/cache/osd.png");
-
-    int w = uiWidth;
-    int h = uiHeight;
+    
     int X = pm->ViewPort().X();
     int Y = pm->ViewPort().Y();
     int T = Top();
     int L = Left();
-
+/*
 
     XPutImage(Xdisplay, pixmap, osd_gc, img, 0, 0, 0, 0, uiWidth, uiHeight);
 
@@ -403,12 +404,42 @@ void cOsdgst::FlushOsd(cPixmapMemory *pm)
               uiWidth, uiHeight,
               L+X, T+Y);
 
+*/    
+    
+    
+       //cairo stuff...
+   cairo_surface_t *surface_dest = cairo_xlib_surface_create( Xdisplay,
+                                                              window_handle, 
+                                                              osd_visual->visual, 
+                                                              uiWidth*2, 
+                                                              uiHeight*2);
+   cairo_t *cr_dest = cairo_create(surface_dest);
+
+   cairo_surface_t *surface_source =
+   cairo_image_surface_create_for_data( (unsigned char*)(img->data),
+                                        CAIRO_FORMAT_RGB24, 
+                                        img->width, 
+                                        img->height, 
+                                        img->bytes_per_line);
+   
+   cairo_scale(cr_dest, ((double)uiWidth / img->width)*2 , ((double)uiHeight / img->height)*2 );
+
+  
+   cairo_set_source_surface(cr_dest, surface_source, 0, 0);
+   cairo_paint(cr_dest);
+   cairo_surface_destroy(surface_source);
+   cairo_surface_destroy(surface_dest);
+   cairo_surface_destroy(surface_source);
+    
+    
+    
+    
+    
     XFlush(Xdisplay);
     XSync(Xdisplay, true);
     XFreePixmap(Xdisplay, pixmap);
-
+    
     DestroyPixmap(pm);
-
     //Debug("Flush(void) \n");
     g_printerr("cOsdgst::FlushOsd(cPixmapMemory *pm) %d ViewPort().Width %d ViewPort().Height\n",pm->ViewPort().Width() ,pm->ViewPort().Height());
 };// end of method
