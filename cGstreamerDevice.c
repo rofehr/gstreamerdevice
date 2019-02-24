@@ -336,10 +336,46 @@ cGstreamerDevice::cGstreamerDevice() : cDevice()
             win = XCreateWindow(dpy, DefaultRootWindow(dpy), 0 ,0, 1920, 1080, 0, 24, InputOutput, visual, CWBackPixel | CWColormap | CWBorderPixel, &attr);
             gc = XCreateGC(dpy, win, 0, NULL);
 
+            XSelectInput(dpy, win, 
+                 StructureNotifyMask |
+                 ExposureMask |
+                 KeyPressMask |
+                 ButtonPressMask |
+                 FocusChangeMask);
+            
+            
             
             XMapWindow(dpy, win);
             XSync(dpy, false);
             XFlush(dpy);
+  /*         
+             while (dpy > 0) 
+             {
+                XEvent event;
+
+                XLockDisplay (dpy);
+                XNextEvent (dpy, &event);
+                XUnlockDisplay (dpy);
+
+                switch (event.type) 
+                {
+
+                    case ButtonPress:
+                    break;
+
+                    case KeyPress:
+                    case KeyRelease:
+                    break;
+
+                    default:; // ignore other events.
+
+                };
+             };
+            
+   */         
+            
+            
+            
 /*            
 
             XSelectInput(dpy, win, KeyPressMask | KeyReleaseMask );

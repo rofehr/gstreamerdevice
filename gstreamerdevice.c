@@ -11,10 +11,6 @@
 #include <vdr/osd.h>
 #include <vdr/plugin.h>
 #include <vdr/args.h>
-#include <vdr/interface.h>
-#include <vdr/player.h>
-#include <vdr/dvbspu.h>
-#include <vdr/shutdown.h>
 
 
 #include "cGstreamerDevice.h"
@@ -29,92 +25,7 @@ static const char *MAINMENUENTRY  = "gstreamerdevice";
 
 using std::string;
 
-//////////////////////////////////////////////////////////////////////////////
-//	C Callbacks
-//////////////////////////////////////////////////////////////////////////////
-
-/**
-**	Soft device plugin remote class.
-*/
-class cSoftRemote:public cRemote
-{
-  public:
-
-    /**
-    **	Soft device remote class constructor.
-    **
-    **	@param name	remote name
-    */
-    cSoftRemote(const char *name):cRemote(name)
-    {
-    }
-
-    /**
-    **	Put keycode into vdr event queue.
-    **
-    **	@param code	key code
-    **	@param repeat	flag key repeated
-    **	@param release	flag key released
-    */
-    bool Put(const char *code, bool repeat = false, bool release = false) {
-	return cRemote::Put(code, repeat, release);
-    }
-};
 
-
-/**
-**	Feed key press as remote input (called from C part).
-**
-**	@param keymap	target keymap "XKeymap" name
-**	@param key	pressed/released key name
-**	@param repeat	repeated key flag
-**	@param release	released key flag
-**	@param letter	x11 character string (system setting locale)
-*/
-extern "C" void FeedKeyPress(const char *keymap, const char *key, int repeat,
-    int release, const char *letter)
-{
-    cRemote *remote;
-    cSoftRemote *csoft;
-
-    if (!keymap || !key) 
-    {
-	  return;
-    }
-    // find remote
-    for (remote = Remotes.First(); remote; remote = Remotes.Next(remote)) 
-    {
-	  if (!strcmp(remote->Name(), keymap)) 
-      {
-	    break;
-      }
-    }
-    // if remote not already exists, create it
-    if (remote) 
-    {
-	  csoft = (cSoftRemote *) remote;
-    } 
-    else 
-    {
-	  csoft = new cSoftRemote(keymap);
-    }
-
-    //Debug(3, "[softhddev]%s %s, %s, %s\n", __FUNCTION__, keymap, key, letter);
-    if (key[1]) {			// no single character
-	if (!csoft->Put(key, repeat, release) && letter
-	    && !cRemote::IsLearning()) {
-	    cCharSetConv conv;
-	    unsigned code;
-
-	    code = Utf8CharGet(conv.Convert(letter));
-	    if (code <= 0xFF) {
-		cRemote::Put(KBDKEY(code));	// feed it for edit mode
-	    }
-	}
-    } else if (!csoft->Put(key, repeat, release)) {
-	cRemote::Put(KBDKEY(key[0]));	// feed it for edit mode
-    }
-}
 
 
 class cPluginGstreamerdevice : public cPlugin {
