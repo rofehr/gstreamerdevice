@@ -336,9 +336,33 @@ cGstreamerDevice::cGstreamerDevice() : cDevice()
             win = XCreateWindow(dpy, DefaultRootWindow(dpy), 0 ,0, 1920, 1080, 0, 24, InputOutput, visual, CWBackPixel | CWColormap | CWBorderPixel, &attr);
             gc = XCreateGC(dpy, win, 0, NULL);
 
+            
             XMapWindow(dpy, win);
             XSync(dpy, false);
             XFlush(dpy);
+/*            
+
+            XSelectInput(dpy, win, KeyPressMask | KeyReleaseMask );
+
+            XEvent event;
+            while (1)
+            {
+                XNextEvent(dpy, &event);
+ 
+
+                if (event.type == KeyPress)
+                {
+                    printf( "KeyPress: %x\n", event.xkey.keycode );
+
+                    if ( event.xkey.keycode == 0x09 )
+                          break;
+                }
+            else if (event.type == KeyRelease)
+            {
+                printf( "KeyRelease: %x\n", event.xkey.keycode );
+            }
+    }
+*/
 
 /*
             Atom wm_state = XInternAtom(dpy, "_NET_WM_STATE", true);

@@ -103,6 +103,8 @@ void *cOsdgst::CreateWindow(Display *dpy)
     attr.background_pixmap = None;
     attr.border_pixmap = None;
     attr.border_pixel = 0;
+  
+/*    
     attr.event_mask =
         StructureNotifyMask |
         EnterWindowMask |
@@ -118,7 +120,23 @@ void *cOsdgst::CreateWindow(Display *dpy)
         CWColormap|
         CWBorderPixel|
         CWEventMask;
-    
+        
+        
+*/
+
+    attr.event_mask =
+        StructureNotifyMask |
+        EnterWindowMask |
+        LeaveWindowMask |
+        ExposureMask |
+        ButtonPressMask |
+        ButtonReleaseMask |
+        OwnerGrabButtonMask;
+
+    attr_mask =
+        CWColormap|
+        CWBorderPixel|
+        CWEventMask;
     
     window_handle = XCreateWindow( Xdisplay, Xroot, 0, 0, 1920, 1080, 0, 32, InputOutput, osd_visual->visual, attr_mask, &attr);
 
@@ -429,11 +447,13 @@ void cOsdgst::FlushOsd(cPixmapMemory *pm)
                                         img->bytes_per_line);
    
    /*
-   cairo_scale(cr_dest, ((double)uiWidth / img->width)*2 , ((double)uiHeight / img->height)*2 );
+   cairo_scale(cr_dest, ((double)uiWidth / img->width)*2 , ((double)uiHeight /
+ img->height)*2 );
    */
    double factor =(double) (1920 / img->width);
    
-   cairo_scale(cr_dest, ((double)uiWidth / img->width)*2 , ((double)uiHeight / img->height)*2 );
+   cairo_scale(cr_dest, ((double)uiWidth / img->width)*2 , ((double)uiHeight /
+ img->height)*2 );
 
   
    cairo_set_source_surface(cr_dest, surface_source, L+X, T+Y);

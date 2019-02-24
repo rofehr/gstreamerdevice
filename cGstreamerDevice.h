@@ -100,6 +100,19 @@ typedef enum {
     GST_PLAY_FLAG_TEXT = (1 << 2) /* We want subtitle output */
 } GstPlayFlags;
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+ /// C callback feed key press
+    extern void FeedKeyPress(const char *, const char *, int, int,
+	const char *);
+#ifdef __cplusplus
+}
+#endif
+
+
 
 class cGstreamerDevice : cDevice {
 public:

@@ -29,7 +29,7 @@ TMPDIR ?= /tmp
 
 ### The compiler options:
 
-export CFLAGS   = $(call PKGCFG,cflags) -O0
+export CFLAGS   = $(call PKGCFG,cflags) -O0 
 export CXXFLAGS = $(call PKGCFG,cxxflags) -O0
 
 ### The version number of VDR's plugin API:
