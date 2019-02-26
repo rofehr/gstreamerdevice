@@ -430,7 +430,7 @@ void cGstreamerDevice::Init()
 
     decoder  = gst_element_factory_make ("decodebin", "decodebin");
 
-    sink = gst_element_factory_make ("xvimagesink", "sink");
+    sink = gst_element_factory_make ("autovideosink", "sink");
     if(sink == NULL)
     {
       sink = gst_element_factory_make ("autovideosink", "sink");
