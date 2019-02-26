@@ -1,6 +1,107 @@
 #include "cGstreamerDevice.h"
 
 
+/* Store the information from the caps that we are interested in. */
+
+static void
+ prepare_overlay (GstElement * overlay, GstCaps * caps, gpointer user_data)
+
+{
+
+  CairoOverlayState *state = (CairoOverlayState *) user_data;
+
+
+
+  state->valid = gst_video_info_from_caps (&state->vinfo, caps);
+
+}// end of function
+
+/* Draw the overlay. 
+
+ * This function draws a cute "beating" heart. */
+
+static void draw_overlay (GstElement * overlay, cairo_t * cr, guint64 timestamp, guint64 duration, gpointer user_data, cPixmapMemory *pm)
+
+{
+
+  CairoOverlayState *s = (CairoOverlayState *) user_data;
+
+  double scale;
+
+  int width, height;
+
+
+
+  if (!s->valid)
+    return;
+  
+  //local_cr = cr;
+  width = GST_VIDEO_INFO_WIDTH (&s->vinfo);
+  height = GST_VIDEO_INFO_HEIGHT (&s->vinfo);
+
+  
+  if( pm == NULL)
+  {
+     g_printerr("draw_overlay with Pixmap \n");
+     int depth = 32; // works fine with depth = 24
+     int bitmap_pad = 32;// 32 for 24 and 32 bpp, 16, for 15&16
+     int bytes_per_line = 0;// number of bytes in the client image between the start of one
+     Display *display=XOpenDisplay(0);
+     
+
+     unsigned char *image32=(unsigned char *)malloc(width*height*4);
+
+     XImage *img = XCreateImage(display, CopyFromParent, depth, ZPixmap, 0, (char*)image32, width, height, bitmap_pad, bytes_per_line);
+
+     img->data = (char*)pm->Data();
+     
+     cairo_surface_t *surface_source =
+     cairo_image_surface_create_for_data( (unsigned char*)(img->data),
+                                          CAIRO_FORMAT_ARGB32, 
+                                          img->width, 
+                                          img->height, 
+                                          img->bytes_per_line);
+     
+     cairo_set_source_surface(cr, surface_source, 0, 0);
+     cairo_paint(cr);
+     cairo_surface_destroy(surface_source);
+     
+     delete(pm); 
+    
+  }
+  else
+  {
+
+
+  scale = 2 * (((timestamp / (int) 1e7) % 70) + 30) / 100.0;
+
+  cairo_translate (cr, width / 2, (height / 2) - 30);
+
+
+  /* FIXME: this assumes a pixel-aspect-ratio of 1/1 */
+
+  cairo_scale (cr, scale, scale);
+
+
+
+  cairo_move_to (cr, 0, 0);
+
+  cairo_curve_to (cr, 0, -30, -50, -30, -50, 0);
+
+  cairo_curve_to (cr, -50, 30, 0, 35, 0, 60);
+
+  cairo_curve_to (cr, 0, 35, 50, 30, 50, 0);
+
+  cairo_curve_to (cr, 50, -30, 0, -30, 0, 0);
+
+  cairo_set_source_rgba (cr, 0.9, 0.0, 0.1, 0.7);
+
+  cairo_fill (cr);
+  }
+
+}// end of function
+
+
 static gboolean handle_message_shm(GstBus *bus, GstMessage *msg)
 {
     GError *err;
@@ -82,6 +183,8 @@ static GstBusSyncReply create_window(GstBus *bus, GstMessage *message, GstPipeli
  */
 static void open_display(const char *display_name = NULL)
 {
+    
+/*    
     if ((!display_name || !*display_name)
             && !(display_name = getenv("DISPLAY"))) {
         display_name = ":0.0";
@@ -93,6 +196,8 @@ static void open_display(const char *display_name = NULL)
         g_printerr("open_display: faild to connect to X Server (%s) \n",
                    display_name);
     }
+*/
+
 };// end of function
 
 class cGstreamerOsd : public cOsd {
@@ -168,6 +273,11 @@ public:
         {
 
             Osdgst->FlushOsd(pm);
+            
+            //draw_overlay(cairo_overlay, local_cr, 1,1, overlay_state, pm);
+            //g_printerr("Flush with Pixmap \n");
+           
+            
         }
 
     };// end of method
@@ -248,7 +358,7 @@ void cGstreamerDevice::Init()
 
     open_display();
     gst_init (NULL, NULL);
-
+/*
     FILE *fd = fopen(TEMP_PATH,"a+");
 
     uri = g_strdup_printf ("playbin uri=file://%s", TEMP_PATH);
@@ -258,13 +368,14 @@ void cGstreamerDevice::Init()
     local_uri = g_strdup_printf ("file://%s", TEMP_PATH);
     g_object_set(appsrc, "uri", local_uri, NULL);
     g_printerr("cGstreamerDevice::Init() g_object_set uri %s \n", local_uri);
+*/
 
-    
+
+/*    
     bus = gst_element_get_bus(appsrc);
     gst_bus_set_sync_handler(bus, (GstBusSyncHandler) create_window, appsrc, NULL);
     gst_bus_add_watch(bus, (GstBusFunc)handle_message, NULL);
 
-    /* Set flags to show Audio and Video, but ignore Subtitles */
     gint flags;
     g_object_get(appsrc, "flags", &flags, NULL);
     flags |= GST_PLAY_FLAG_VIDEO | GST_PLAY_FLAG_AUDIO;
@@ -272,7 +383,7 @@ void cGstreamerDevice::Init()
     g_object_set(appsrc, "flags", flags, NULL);
 
 
-    /* enable Hardwaredecoding 'vaapidecode' */
+    
 
     GstRegistry *registry = NULL;
     GstElementFactory *factory = NULL;
@@ -291,7 +402,72 @@ void cGstreamerDevice::Init()
     }
 
     g_printerr("gstreamer Version %s \n" ,gst_version_string());
+  */  
     
+    
+    // Test
+    
+    //Create Overlay
+
+    FILE *fd = fopen(TEMP_PATH,"a+");
+
+
+    appsrc = gst_element_factory_make("playbin", "playbin");
+    local_uri = g_strdup_printf ("file://%s", TEMP_PATH);
+    g_object_set(appsrc, "uri", local_uri, NULL);
+
+    
+    //uri = g_strdup_printf ("%s", TEMP_PATH);
+    //appsrc = gst_element_factory_make ("filesrc", "source");
+    //appsrc = gst_element_factory_make ("videotestsrc", "source");;
+    //g_object_set(appsrc, "location", uri, NULL);
+
+    adaptor1 = gst_element_factory_make ("videoconvert", "adaptor1");
+
+    cairo_overlay = gst_element_factory_make ("cairooverlay", "overlay");
+
+    adaptor2 = gst_element_factory_make ("videoconvert", "adaptor2");
+
+    decoder  = gst_element_factory_make ("decodebin", "decodebin");
+
+    sink = gst_element_factory_make ("glimagesink", "sink");
+    if(sink == NULL)
+    {
+      sink = gst_element_factory_make ("autovideosink", "sink");
+    }
+    
+   
+    /* If failing, the element could not be created */
+
+    g_assert (cairo_overlay);
+
+
+
+    /* allocate on heap for pedagogical reasons, makes code easier to transfer */
+
+    overlay_state = g_new0 (CairoOverlayState, 1);
+    
+    
+    /* Hook up the neccesary signals for cairooverlay */
+
+    g_signal_connect (cairo_overlay, "draw", G_CALLBACK (draw_overlay), overlay_state);
+
+    g_signal_connect (cairo_overlay, "caps-changed", G_CALLBACK (prepare_overlay), overlay_state);
+    
+/*    
+    pipeline = gst_pipeline_new ("cairo-overlay-example");
+
+    gst_bin_add_many (GST_BIN (pipeline), appsrc, adaptor1, cairo_overlay, adaptor2, sink, NULL);
+    
+    if (gst_element_link_many (appsrc, adaptor1,cairo_overlay, adaptor2, sink, NULL) != TRUE) 
+    {
+         g_printerr("Failed to link elements!");
+    }
+*/
+    //bus = gst_pipeline_get_bus (GST_PIPELINE (pipeline));
+    //gst_bus_add_watch(bus, (GstBusFunc)handle_message, NULL);
+    //gst_bus_add_signal_watch (bus);
+    //g_signal_connect (G_OBJECT (bus), "message", G_CALLBACK (handle_message), NULL);
 
 };//end if method
 
@@ -337,10 +513,14 @@ cGstreamerDevice::cGstreamerDevice() : cDevice()
             gc = XCreateGC(dpy, win, 0, NULL);
 
             XSelectInput(dpy, win, 
-                 StructureNotifyMask |
-                 ExposureMask |
-                 KeyPressMask |
-                 ButtonPressMask |
+                 StructureNotifyMask |
+
+                 ExposureMask |
+
+                 KeyPressMask |
+
+                 ButtonPressMask |
+
                  FocusChangeMask);
             
             
@@ -350,25 +530,42 @@ cGstreamerDevice::cGstreamerDevice() : cDevice()
             XFlush(dpy);
   /*         
              while (dpy > 0) 
-             {
-                XEvent event;
-
-                XLockDisplay (dpy);
-                XNextEvent (dpy, &event);
-                XUnlockDisplay (dpy);
-
-                switch (event.type) 
-                {
+             {
 
-                    case ButtonPress:
-                    break;
-
-                    case KeyPress:
-                    case KeyRelease:
-                    break;
-
-                    default:; // ignore other events.
-
+                XEvent event;
+
+
+
+                XLockDisplay (dpy);
+
+                XNextEvent (dpy, &event);
+
+                XUnlockDisplay (dpy);
+
+
+
+                switch (event.type) 
+                {
+
+
+                    case ButtonPress:
+
+                    break;
+
+
+
+                    case KeyPress:
+
+                    case KeyRelease:
+
+                    break;
+
+
+
+                    default:; // ignore other events.
+
+
+
                 };
              };
             
@@ -381,23 +578,39 @@ cGstreamerDevice::cGstreamerDevice() : cDevice()
             XSelectInput(dpy, win, KeyPressMask | KeyReleaseMask );
 
             XEvent event;
-            while (1)
-            {
-                XNextEvent(dpy, &event);
- 
+            while (1)
 
-                if (event.type == KeyPress)
-                {
-                    printf( "KeyPress: %x\n", event.xkey.keycode );
-
-                    if ( event.xkey.keycode == 0x09 )
-                          break;
-                }
-            else if (event.type == KeyRelease)
-            {
-                printf( "KeyRelease: %x\n", event.xkey.keycode );
-            }
-    }
+            {
+
+                XNextEvent(dpy, &event);
+
+ 
+
+
+                if (event.type == KeyPress)
+
+                {
+
+                    printf( "KeyPress: %x\n", event.xkey.keycode );
+
+
+
+                    if ( event.xkey.keycode == 0x09 )
+
+                          break;
+
+                }
+
+            else if (event.type == KeyRelease)
+
+            {
+
+                printf( "KeyRelease: %x\n", event.xkey.keycode );
+
+            }
+
+    }
+
 */
 
 /*
@@ -452,14 +665,13 @@ bool cGstreamerDevice::SetPlayMode(ePlayMode PlayMode)
     {
         if( live_stream_is_runnig)
         {
-            gst_element_set_state (appsrc, GST_STATE_NULL);
             ilive_stream_count = 0;
             live_stream_is_runnig = FALSE;
             remove(TEMP_PATH);
             g_printerr("SetPlayMode (%d) live_stream_is_runnig, ilive_stream_count %d\n",PlayMode, ilive_stream_count);
             
-            gst_element_set_state (pipesrc, GST_STATE_NULL);
-            remove("/tmp/tmpsock");
+            gst_element_set_state (appsrc, GST_STATE_NULL);
+            gst_element_set_state (pipeline, GST_STATE_NULL);
 
         }
         break;
@@ -638,13 +850,12 @@ void cGstreamerDevice::StartReplay()
 {
     gst_element_set_state (appsrc, GST_STATE_NULL);
     
-    local_uri = g_strdup_printf ("file://%s", TEMP_PATH);
-    g_object_set(appsrc, "uri", local_uri, NULL);
+  //  local_uri = g_strdup_printf ("file://%s", TEMP_PATH);
+  //  g_object_set(appsrc, "uri", local_uri, NULL);
 
     g_printerr(local_uri);
     g_printerr("\n");
 
-    gst_element_set_state (appsrc, GST_STATE_PLAYING);
 
     g_printerr("StartReplay() \n");
 
@@ -657,7 +868,9 @@ void cGstreamerDevice::StartReplay()
     else
     {
     }
-
+    
+    gst_element_set_state (appsrc, GST_STATE_PLAYING);
+    gst_element_set_state (pipeline, GST_STATE_PLAYING);
 
 };// end of method
 

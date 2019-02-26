@@ -401,7 +401,7 @@ void cOsdgst::FlushOsd(cPixmapMemory *pm)
 
     img->data = (char*)pm->Data();
 
-    Pixmap pixmap = XCreatePixmap(Xdisplay, window_handle, uiWidth*2, uiHeight*2, depth);
+    //Pixmap pixmap = XCreatePixmap(Xdisplay, window_handle, uiWidth*2, uiHeight*2, depth);
 
     
     int X = pm->ViewPort().X();
@@ -468,7 +468,9 @@ void cOsdgst::FlushOsd(cPixmapMemory *pm)
     
     XFlush(Xdisplay);
     XSync(Xdisplay, true);
-    XFreePixmap(Xdisplay, pixmap);
+   // XFreePixmap(Xdisplay, pixmap);
+    
+
     
     DestroyPixmap(pm);
     //Debug("Flush(void) \n");

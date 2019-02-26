@@ -34,14 +34,43 @@
 
 #include <string>         // std::string
 
+
+/* Datastructure to share the state we are interested in between
+
+ * prepare and render function. */
+
+typedef struct
+
+{
+
+  gboolean valid;
+
+  GstVideoInfo vinfo;
+
+} CairoOverlayState;
+
+
+
+
 static XVisualInfo vinfo;
 static Visual *visual;
 static Display *dpy = NULL;
 static GstElement *appsrc = NULL;
-static GstElement *gdkpixbufoverlay = NULL;
+static GstElement *cairo_overlay = NULL;
+static GstElement *pipeline = NULL;
+static GstElement *sink = NULL;
+static GstElement *adaptor1 = NULL;
+static GstElement *adaptor2 = NULL;
+static GstElement *decoder = NULL;
+static cairo_t *local_cr = NULL;
+
+
+static CairoOverlayState *overlay_state;
+
+
 static GstElement *filesink = NULL;
 static GstElement *bin = NULL;
-static GstElement *sink = NULL;
+
 
 
 static GstBus *pipebus = NULL;
@@ -100,17 +129,28 @@ typedef enum {
     GST_PLAY_FLAG_TEXT = (1 << 2) /* We want subtitle output */
 } GstPlayFlags;
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+#ifdef __cplusplus
 
- /// C callback feed key press
-    extern void FeedKeyPress(const char *, const char *, int, int,
-	const char *);
-#ifdef __cplusplus
-}
-#endif
+extern "C"
+
+{
+
+#endif
+
+
+ /// C callback feed key press
+
+    extern void FeedKeyPress(const char *, const char *, int, int,
+
+	const char *);
+
+
+#ifdef __cplusplus
+
+}
+
+#endif
+
 
 
 
