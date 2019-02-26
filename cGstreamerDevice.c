@@ -353,7 +353,7 @@ void cGstreamerDevice::Init()
     
     g_printerr("void cGstreamerDevice::Init() \n");
 
-    setenv("GST_VAAPI_ALL_DRIVERS", "1", 1);
+   // setenv("GST_VAAPI_ALL_DRIVERS", "1", 1);
     setenv("GST_DEBUG", "2", 2);
 
     open_display();
