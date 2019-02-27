@@ -359,7 +359,7 @@ void cGstreamerDevice::Init()
     open_display();
     gst_init (NULL, NULL);
 
-/*    
+    
     FILE *fd = fopen(TEMP_PATH,"a+");
 
     uri = g_strdup_printf ("playbin uri=file://%s", TEMP_PATH);
@@ -400,7 +400,7 @@ void cGstreamerDevice::Init()
 
     g_printerr("gstreamer Version %s \n" ,gst_version_string());
     
- */   
+ /*   
     
     
   
@@ -471,6 +471,7 @@ void cGstreamerDevice::Init()
     bus = gst_element_get_bus(pipeline);
     //gst_bus_set_sync_handler(bus, (GstBusSyncHandler) create_window, appsrc, NULL);
     gst_bus_add_watch(bus, (GstBusFunc)handle_message, NULL);
+*/
     
 
 };//end if method
