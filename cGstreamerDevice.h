@@ -62,9 +62,8 @@ static GstElement *sink = NULL;
 static GstElement *adaptor1 = NULL;
 static GstElement *adaptor2 = NULL;
 static GstElement *decoder = NULL;
+static GstElement *queue = NULL;
 static cairo_t *local_cr = NULL;
-
-
 static CairoOverlayState *overlay_state;
 
 

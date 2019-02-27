@@ -354,11 +354,12 @@ void cGstreamerDevice::Init()
     g_printerr("void cGstreamerDevice::Init() \n");
 
     setenv("GST_VAAPI_ALL_DRIVERS", "1", 1);
-    setenv("GST_DEBUG", "2", 2);
+    setenv("GST_DEBUG", "4", 2);
 
     open_display();
     gst_init (NULL, NULL);
-/*
+
+/*    
     FILE *fd = fopen(TEMP_PATH,"a+");
 
     uri = g_strdup_printf ("playbin uri=file://%s", TEMP_PATH);
@@ -368,12 +369,8 @@ void cGstreamerDevice::Init()
     local_uri = g_strdup_printf ("file://%s", TEMP_PATH);
     g_object_set(appsrc, "uri", local_uri, NULL);
     g_printerr("cGstreamerDevice::Init() g_object_set uri %s \n", local_uri);
-*/
-
-
-/*    
     bus = gst_element_get_bus(appsrc);
-    gst_bus_set_sync_handler(bus, (GstBusSyncHandler) create_window, appsrc, NULL);
+    //gst_bus_set_sync_handler(bus, (GstBusSyncHandler) create_window, appsrc, NULL);
     gst_bus_add_watch(bus, (GstBusFunc)handle_message, NULL);
 
     gint flags;
@@ -402,7 +399,11 @@ void cGstreamerDevice::Init()
     }
 
     g_printerr("gstreamer Version %s \n" ,gst_version_string());
-  */  
+    
+ */   
+    
+    
+  
     
     
     // Test
@@ -429,45 +430,48 @@ void cGstreamerDevice::Init()
     adaptor2 = gst_element_factory_make ("videoconvert", "adaptor2");
 
     decoder  = gst_element_factory_make ("decodebin", "decodebin");
+    
+    queue = gst_element_factory_make ("queue", "queue");
 
-    sink = gst_element_factory_make ("autovideosink", "sink");
+    sink = gst_element_factory_make ("xvimagesink", "sink");
     if(sink == NULL)
     {
       sink = gst_element_factory_make ("autovideosink", "sink");
     }
     
    
-    /* If failing, the element could not be created */
+    
 
     g_assert (cairo_overlay);
 
 
 
-    /* allocate on heap for pedagogical reasons, makes code easier to transfer */
+    
 
     overlay_state = g_new0 (CairoOverlayState, 1);
     
     
-    /* Hook up the neccesary signals for cairooverlay */
+    
 
     g_signal_connect (cairo_overlay, "draw", G_CALLBACK (draw_overlay), overlay_state);
 
     g_signal_connect (cairo_overlay, "caps-changed", G_CALLBACK (prepare_overlay), overlay_state);
     
-/*    
+    
     pipeline = gst_pipeline_new ("cairo-overlay-example");
 
-    gst_bin_add_many (GST_BIN (pipeline), appsrc, adaptor1, cairo_overlay, adaptor2, sink, NULL);
+    gst_bin_add_many (GST_BIN (pipeline), appsrc, decoder, adaptor1, cairo_overlay, adaptor2, sink, queue, NULL);
     
-    if (gst_element_link_many (appsrc, adaptor1,cairo_overlay, adaptor2, sink, NULL) != TRUE) 
+    //if (gst_element_link_many (appsrc, adaptor1, cairo_overlay, adaptor2, sink, NULL) != TRUE) 
+    if (gst_element_link_many (appsrc, decoder, adaptor1, cairo_overlay, queue, sink, NULL) != TRUE) 
     {
          g_printerr("Failed to link elements!");
     }
-*/
-    //bus = gst_pipeline_get_bus (GST_PIPELINE (pipeline));
-    //gst_bus_add_watch(bus, (GstBusFunc)handle_message, NULL);
-    //gst_bus_add_signal_watch (bus);
-    //g_signal_connect (G_OBJECT (bus), "message", G_CALLBACK (handle_message), NULL);
+
+    bus = gst_element_get_bus(pipeline);
+    //gst_bus_set_sync_handler(bus, (GstBusSyncHandler) create_window, appsrc, NULL);
+    gst_bus_add_watch(bus, (GstBusFunc)handle_message, NULL);
+    
 
 };//end if method
 
@@ -658,6 +662,7 @@ bool cGstreamerDevice::CanReplay(void) const
 
 bool cGstreamerDevice::SetPlayMode(ePlayMode PlayMode)
 {
+    GstStateChangeReturn ret;
 
     switch (PlayMode)
     {
@@ -670,8 +675,8 @@ bool cGstreamerDevice::SetPlayMode(ePlayMode PlayMode)
             remove(TEMP_PATH);
             g_printerr("SetPlayMode (%d) live_stream_is_runnig, ilive_stream_count %d\n",PlayMode, ilive_stream_count);
             
-            gst_element_set_state (appsrc, GST_STATE_NULL);
-            gst_element_set_state (pipeline, GST_STATE_NULL);
+            ret = gst_element_set_state (appsrc, GST_STATE_NULL);
+            //ret = gst_element_set_state (pipeline, GST_STATE_NULL);
 
         }
         break;
@@ -848,7 +853,10 @@ void cGstreamerDevice::ShowOverlay()
 
 void cGstreamerDevice::StartReplay()
 {
-    gst_element_set_state (appsrc, GST_STATE_NULL);
+    GstStateChangeReturn ret;
+    
+    ret = gst_element_set_state (appsrc, GST_STATE_NULL);
+    //ret = gst_element_set_state (pipeline, GST_STATE_NULL);
     
   //  local_uri = g_strdup_printf ("file://%s", TEMP_PATH);
   //  g_object_set(appsrc, "uri", local_uri, NULL);
@@ -869,8 +877,8 @@ void cGstreamerDevice::StartReplay()
     {
     }
     
-    gst_element_set_state (appsrc, GST_STATE_PLAYING);
-    gst_element_set_state (pipeline, GST_STATE_PLAYING);
+    ret = gst_element_set_state (appsrc, GST_STATE_PLAYING);
+    //ret = gst_element_set_state (pipeline, GST_STATE_PLAYING);
 
 };// end of method
 
