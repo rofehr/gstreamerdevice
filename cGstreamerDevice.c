@@ -184,7 +184,6 @@ static GstBusSyncReply create_window(GstBus *bus, GstMessage *message, GstPipeli
 static void open_display(const char *display_name = NULL)
 {
     
-/*    
     if ((!display_name || !*display_name)
             && !(display_name = getenv("DISPLAY"))) {
         display_name = ":0.0";
@@ -196,7 +195,6 @@ static void open_display(const char *display_name = NULL)
         g_printerr("open_display: faild to connect to X Server (%s) \n",
                    display_name);
     }
-*/
 
 };// end of function
 
