@@ -19,5 +19,22 @@ Requirements:
   
   libgstreamer1.0-dev
   libglib2.0-dev
-
+  libgstreamer-plugins-base1.0-dev
+  libxrender-dev
+  libxcomposite-dev
+  libcairo2-dev
+  libxpm-dev
   
+
+Help if there are some missing dependencies  
+  
+Search for missing packages
+
+$ sudo apt-get install apt-file
+$ sudo apt-file update
+$ apt-file search "X11/extensions/XTest.h"
+libxtst-dev: /usr/include/X11/extensions/XTest.h
+
+Once you've the package name, install via:
+
+sudo apt-get install libxtst-dev
