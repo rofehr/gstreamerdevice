@@ -38,3 +38,4 @@ libxtst-dev: /usr/include/X11/extensions/XTest.h
 Once you've the package name, install via:
 
 sudo apt-get install libxtst-dev
+
