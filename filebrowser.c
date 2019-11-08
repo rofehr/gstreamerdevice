@@ -27,7 +27,8 @@ cFilebrowser::cFilebrowser(string RootDir, string DiscDevice)
   if (currentDir == "")
     currentDir = rootDir;
   ShowDirectory(currentDir);
-};// end of method
+}
+;// end of method
 
 void cFilebrowser::ShowDirectory(string Path)
 {
@@ -67,7 +68,7 @@ void cFilebrowser::ShowDirectory(string Path)
   
   // Test
   // ToDo Liste Dynamisch füllen
-  AddItem("http://nrodl.zdf.de/none/3sat/19/02/190220_teufelskraut_oder_wunderbluete_ard/1/190220_teufelskraut_oder_wunderbluete_ard_2328k_p35v13.mp4", "Stream - Cannabis als Medizin", false);
+  //AddItem("http://nrodl.zdf.de/none/3sat/19/02/190220_teufelskraut_oder_wunderbluete_ard/1/190220_teufelskraut_oder_wunderbluete_ard_2328k_p35v13.mp4", "Stream - Cannabis als Medizin", false);
   
 
   string MenuTitle = "Filebrowser";
@@ -80,7 +81,8 @@ void cFilebrowser::ShowDirectory(string Path)
   SetHelp(NULL, NULL, "Shuffle", NULL);
 #endif
   Display();
-};// end of method
+}
+;// end of method
 
 void cFilebrowser::AddItem(string Path, string Text, bool IsDir)
 {
@@ -88,7 +90,8 @@ void cFilebrowser::AddItem(string Path, string Text, bool IsDir)
   if (currentItem == Text)
     Current = true;
   Add(new cFilebrowserMenuItem(Path, Text, IsDir), Current);
-};// end of method
+}
+;// end of method
 
 eOSState cFilebrowser::ProcessKey(eKeys Key)
 {
@@ -172,7 +175,8 @@ eOSState cFilebrowser::ProcessKey(eKeys Key)
   }
 
   return cOsdMenu::ProcessKey(Key);
-};// end of method
+}
+;// end of method
 
 bool cFilebrowser::PlayFile(string Filename, bool Shuffle)
 {
@@ -195,10 +199,12 @@ bool cFilebrowser::PlayFile(string Filename, bool Shuffle)
     shuffleFile.Filename = (char *)Filename.c_str();
     return p->Service("Mpv_PlaylistShuffle", &shuffleFile);
   }
-*/
+
+*/
   // should never be reached, but silence a compiler warning
   return false;
-};// end of method
+}
+;// end of method
 
 // returns true if play is started, false otherwise
 bool cFilebrowser::PlayDisc()
@@ -251,7 +257,8 @@ bool cFilebrowser::PlayDisc()
   }
 #endif
 return false;
-};// end of method
+}
+;// end of method
 
 bool cFilebrowser::Mount(string Path)
 {
@@ -275,7 +282,8 @@ bool cFilebrowser::Mount(string Path)
     return true;
 #endif
   return false;
-};// end of method
+}
+;// end of method
 
 bool cFilebrowser::Unmount()
 {
@@ -287,12 +295,14 @@ bool cFilebrowser::Unmount()
     return true;
 #endif
   return false;
-};// end of method
+}
+;// end of method
 
 cFilebrowserMenuItem::cFilebrowserMenuItem(string Path, string Item, bool IsDir)
 {
   isDir = IsDir;
   path = Path;
   SetText(Item.c_str());
-};// end of method
+}
+;// end of method
 
