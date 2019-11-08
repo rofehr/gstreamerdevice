@@ -36,17 +36,12 @@
 
 
 /* Datastructure to share the state we are interested in between
-
  * prepare and render function. */
 
 typedef struct
-
 {
-
   gboolean valid;
-
   GstVideoInfo vinfo;
-
 } CairoOverlayState;
 
 
@@ -56,27 +51,26 @@ static XVisualInfo vinfo;
 static Visual *visual;
 static Display *dpy = NULL;
 static GstElement *appsrc = NULL;
-static GstElement *cairo_overlay = NULL;
-static GstElement *pipeline = NULL;
-static GstElement *sink = NULL;
-static GstElement *adaptor1 = NULL;
-static GstElement *adaptor2 = NULL;
-static GstElement *decoder = NULL;
-static GstElement *queue = NULL;
-static cairo_t *local_cr = NULL;
-static CairoOverlayState *overlay_state;
+//static GstElement *cairo_overlay = NULL;
+//static GstElement *pipeline = NULL;
+//static GstElement *sink = NULL;
+//static GstElement *adaptor1 = NULL;
+//static GstElement *adaptor2 = NULL;
+//static GstElement *decoder = NULL;
+//static GstElement *queue = NULL;
+//static cairo_t *local_cr = NULL;
+//static CairoOverlayState *overlay_state;
 
 
-static GstElement *filesink = NULL;
-static GstElement *bin = NULL;
+//static GstElement *filesink = NULL;
+//static GstElement *bin = NULL;
 
 
 
 static GstBus *pipebus = NULL;
 static Display *pipedpy = NULL;
 static Window pipewin = 0;
-static ShmPipe* spipe = NULL;
-static GstElement *pipesrc = NULL;
+
 
     
     
@@ -89,14 +83,14 @@ static int blackColor;
 static int whiteColor;
 
 static Window win = 0;
-static Window glX_win = 0;
+//static Window glX_win = 0;
 static GC gc;
 
 // Global Defines
 static bool live_stream_is_runnig = FALSE;
 static int ilive_stream_count = 0;
 
-
+/*
 static int VisDataMain[] = {
     GLX_RENDER_TYPE, GLX_RGBA_BIT,
     GLX_DRAWABLE_TYPE, GLX_WINDOW_BIT,
@@ -108,17 +102,12 @@ static int VisDataMain[] = {
     GLX_DEPTH_SIZE, 16,
     None
 };
-
+*/
 
 #define CHUNK_SIZE 4096
 
 #define LOCAL_DEBUG 1
 
-#ifdef LOCAL_DEBUG
-#define TEMP_PATH "/var/cache/dummy.ts"
-#else
-#define TEMP_PATH "/var/cache/dummy.ts"
-#endif
 
 
 /* playbin flags */
@@ -150,6 +139,10 @@ extern "C"
 
 #endif
 
+
+#define AUDIO_SINK "autoaudiosink"
+
+#define VIDEO_SINK "glimagesink "
 
 
 
@@ -189,8 +182,6 @@ public:
     bool Flush(int TimeoutMs = 0);
 
     bool Start(void);
-
-    void StartReplay();
     
     void ReplayPlayFile(char* Filename);
 
@@ -199,12 +190,15 @@ protected:
     void MakePrimaryDevice(bool On);
 
 private:    
-    void StartReplayBuffer();
 
     void ShowOverlay();
     
-    bool CreateShmSrc();
-   
+    GMainLoop *mLoop;
+     
+    GstElement *mVdrSrc;
 
+    GstElement *pipeline; 
+
+    virtual void Action(void);
 };
 
