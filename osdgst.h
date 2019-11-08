@@ -43,6 +43,7 @@ static GLXWindow glX_window_handle;
 static int osd_width, osd_height;
 static GC osd_gc;
 
+
 static int VisData[] = {
     GLX_RENDER_TYPE, GLX_RGBA_BIT,
     GLX_DRAWABLE_TYPE, GLX_WINDOW_BIT,
