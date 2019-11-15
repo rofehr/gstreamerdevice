@@ -119,7 +119,7 @@ void cGstreamerDevice::Action(void) {
 
 
     
-    pipeline = gst_parse_launch("appsrc name=vdrsource !  decodebin  name=demux  demux.  !  queue  !  audioconvert  !  audioresample  !  autoaudiosink demux. !  videoconvert  !  xvimagesink " , NULL);
+    pipeline = gst_parse_launch("appsrc name=vdrsource !  decodebin  name=demux  demux.  !  queue  !  audioconvert  !  audioresample  !  autoaudiosink demux. !  videoconvert  !  autovideosink" , NULL);
 	//pipeline = gst_parse_launch("appsrc name=vdrsource !  decodebin  name=demux  demux.  !  queue  !  audioconvert  !  audioresample  !  autoaudiosink demux. !  videoconvert  !  glimagesink" , NULL);
     if (!pipeline) {
      isyslog("!pipeline");
