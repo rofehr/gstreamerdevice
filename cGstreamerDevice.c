@@ -331,8 +331,8 @@ void cGstreamerDevice::ShowOverlay()
 void cGstreamerDevice::ReplayPlayFile(char* Filename)
 {
 
-    g_printerr(Filename);
-    g_printerr("\n");
+    //g_printerr(Filename);
+    //g_printerr("\n");
     
     gst_element_set_state (pipeline, GST_STATE_NULL);
     
