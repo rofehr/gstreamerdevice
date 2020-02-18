@@ -71,7 +71,7 @@ public:
     virtual void Housekeeping(void) {};
     
     virtual const char *MainMenuEntry(void) {
-        return "GST-Player";
+        return "Media-Player";
     };
 
     virtual cOsdObject *MainMenuAction(void);
