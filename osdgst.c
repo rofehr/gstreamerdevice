@@ -90,9 +90,11 @@ void *cOsdgst::CreateWindow(Display *dpy)
             if(!fbconfig) {
                 g_printerr("No matching FB config found");
             }
+    else
+    {
 
             describe_fbconfig(fbconfig);
-
+    }
 
   
     
