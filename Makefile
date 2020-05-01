@@ -17,8 +17,8 @@ VERSION = $(shell grep 'static const char \*VERSION *=' $(PLUGIN).c | awk '{ pri
 
 # Use package data if installed...otherwise assume we're under the VDR source directory:
 #PKGCFG = $(if $(VDRDIR),$(shell pkg-config --variable=$(1) $(VDRDIR)/vdr.pc),$(shell pkg-config --variable=$(1) vdr || pkg-config --variable=$(1) ../../../vdr.pc))
-PKGCFG = $(if $(VDRDIR),$(shell pkg-config --variable=$(1) $(VDRDIR)/vdr.pc),$(shell PKG_CONFIG_PATH="$$PKG_CONFIG_PATH:../../.." pkg-config --variable=$(1) vdr))
-#PKGCFG = $(if $(VDRDIR),$(shell pkg-config --variable=$(1) $(VDRDIR)/vdr.pc),$(shell PKG_CONFIG_PATH="$$PKG_CONFIG_PATH:../../.." pkg-config --variable=$(1) vdr) $(shell pkg-config --cflags --libs gstreamer-1.0 gio-2.0 glib-2.0 ) )
+#PKGCFG = $(if $(VDRDIR),$(shell pkg-config --variable=$(1) $(VDRDIR)/vdr.pc),$(shell PKG_CONFIG_PATH="$$PKG_CONFIG_PATH:../../.." pkg-config --variable=$(1) vdr))
+PKGCFG = $(if $(VDRDIR),$(shell pkg-config --variable=$(1) $(VDRDIR)/vdr.pc),$(shell PKG_CONFIG_PATH="$$PKG_CONFIG_PATH:../../.." pkg-config --variable=$(1) vdr) $(shell pkg-config --cflags gdk-pixbuf-2.0 libdrm --libs gstreamer-1.0 gio-2.0 glib-2.0 gdk-pixbuf-2.0) )
 
 
 LIBDIR = $(call PKGCFG,libdir)
@@ -51,15 +51,14 @@ SOFILE = libvdr-$(PLUGIN).so
 
 ### Includes and Defines (add further entries here):
 
-#INCLUDES +=
-INCLUDES += $(shell pkg-config --cflags gstreamer-1.0) 
+INCLUDES += $(shell pkg-config --cflags libdrm gstreamer-1.0 gdk-pixbuf-2.0 ) 
 
 
 DEFINES += -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
 
 ### The object files (add further files here):
 
-OBJS = $(PLUGIN).o osdgst.o cGstreamerDevice.o shmpipe.o shmalloc.o filebrowser.o
+OBJS = $(PLUGIN).o osdgst.o cGstreamerDevice.o filebrowser.o
 
 ### The main target:
 
@@ -108,7 +107,7 @@ install-i18n: $(I18Nmsgs)
 ### Targets:
 
 $(SOFILE): $(OBJS)
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) -shared $(OBJS) -lgstvideo-1.0 -lXcomposite -lcairo -lXfixes -lgstreamer-1.0 -lgio-2.0 -lX11 -lgstapp-1.0 -lXpm -lxcb -lxcb-shm -lXext -lGL -lXrender -o $@
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -shared $(OBJS) -lgdk_pixbuf-2.0 -lgobject-2.0 -lglib-2.0 -ldrm -lgbm -lGL -lSDL2 -lGLEW -lGLESv2 -lEGL -lglut -lgstvideo-1.0 -lXcomposite -lcairo -lXfixes -lgstreamer-1.0 -lgio-2.0 -lX11 -lgstapp-1.0 -lXpm -lxcb -lxcb-shm -lXext -lGL -lXrender -o $@
 
 install-lib: $(SOFILE)
 	install -D $^ $(DESTDIR)$(LIBDIR)/$^.$(APIVERSION)

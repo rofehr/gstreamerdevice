@@ -13,8 +13,10 @@
 #include <gst/gst.h>
 #include <gio/gio.h>
 #include <gst/app/gstappsrc.h>
+#include <gst/video/video.h>
 #include <gst/video/videooverlay.h>
 #include <gst/video/video-overlay-composition.h>
+#include <gdk-pixbuf/gdk-pixbuf.h>
 
 #include <X11/Xlib.h>
 #include <X11/extensions/Xcomposite.h>
@@ -25,14 +27,15 @@
 #include <X11/xpm.h>
 #include <X11/Xatom.h>
 
-#include <GL/gl.h>
-#include <GL/glx.h>
+//#include <GL/gl.h>
+//#include <GL/glx.h>
 
 #include "osdgst.h"
 
-#include "shmpipe.h"
 
 #include <string>         // std::string
+
+//#include "mcheck.h"
 
 
 /* Datastructure to share the state we are interested in between
@@ -51,26 +54,12 @@ static XVisualInfo vinfo;
 static Visual *visual;
 static Display *dpy = NULL;
 static GstElement *appsrc = NULL;
-//static GstElement *cairo_overlay = NULL;
-//static GstElement *pipeline = NULL;
-//static GstElement *sink = NULL;
-//static GstElement *adaptor1 = NULL;
-//static GstElement *adaptor2 = NULL;
-//static GstElement *decoder = NULL;
-//static GstElement *queue = NULL;
-//static cairo_t *local_cr = NULL;
-//static CairoOverlayState *overlay_state;
-
-
-//static GstElement *filesink = NULL;
-//static GstElement *bin = NULL;
-
-
+static GstElement *overlay = NULL;
 
 static GstBus *pipebus = NULL;
 static Display *pipedpy = NULL;
 static Window pipewin = 0;
-
+static GdkPixbuf *logo_pixbuf;
 
     
     
@@ -83,26 +72,12 @@ static int blackColor;
 static int whiteColor;
 
 static Window win = 0;
-//static Window glX_win = 0;
+static Window root = 0;
 static GC gc;
 
 // Global Defines
 static bool live_stream_is_runnig = FALSE;
 static int ilive_stream_count = 0;
-
-/*
-static int VisDataMain[] = {
-    GLX_RENDER_TYPE, GLX_RGBA_BIT,
-    GLX_DRAWABLE_TYPE, GLX_WINDOW_BIT,
-    GLX_DOUBLEBUFFER, True,
-    GLX_RED_SIZE, 8,
-    GLX_GREEN_SIZE, 8,
-    GLX_BLUE_SIZE, 8,
-    GLX_ALPHA_SIZE, 8,
-    GLX_DEPTH_SIZE, 16,
-    None
-};
-*/
 
 #define CHUNK_SIZE 4096
 
@@ -138,11 +113,6 @@ extern "C"
 }
 
 #endif
-
-
-#define AUDIO_SINK "autoaudiosink"
-
-#define VIDEO_SINK "glimagesink "
 
 
 
@@ -185,6 +155,8 @@ public:
     
     void ReplayPlayFile(char* Filename);
 
+    void SetVolumeDevice(int Volume);
+
 protected:
 
     void MakePrimaryDevice(bool On);
@@ -192,13 +164,34 @@ protected:
 private:    
 
     void ShowOverlay();
+
+    Window window_handle;
     
-    GMainLoop *mLoop;
-     
     GstElement *mVdrSrc;
 
     GstElement *pipeline; 
 
-    virtual void Action(void);
+     GstElement *video_converter;
+
+     GstElement *video_sink;
+
+     GstElement *audio_sink;
+
+     GstElement *video_decodebin;
+
+     GstElement *audio_decodebin;
+
+     GstElement *audioqueue;
+
+     GstElement *videoqueue;
+
+     GstElement *audio_convertor;
+
+     Display *keyboard_dpy;
+
+     void Action(void);
+
+     void open_display(const char *display_name );
+
 };
 

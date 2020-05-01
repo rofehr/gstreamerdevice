@@ -15,8 +15,7 @@ public:
     {
         Osdgst = new cOsdgst(Left,  Top,  Level);
 
-
-        Osdgst->CreateWindow(dpy);
+        Osdgst->Init(overlay);
 
         g_printerr("cGstreamerOsd(int Left, int Top, uint Level) : cOsd(Left, Top, Level) \n");
     };// end of method
@@ -73,14 +72,12 @@ public:
         {
 
             Osdgst->FlushOsd(pm);
-            
+
         }
 
     };// end of method
 
 };// end of class
-
-
 
 
 class cGstreamerOsdProvider : public cOsdProvider {
@@ -115,33 +112,84 @@ public:
 
 cOsd *cGstreamerOsdProvider::Osd;
 
+
+
+void cGstreamerDevice::open_display(const char *display_name = NULL)
+{
+
+}// end of function
+
 void cGstreamerDevice::Action(void) {
 
+if (!pipeline)
+{
+//     pipeline = gst_parse_launch("appsrc name=vdrsource !  decodebin  name=demux  demux.  !  queue  !  audioconvert  !  audioresample  !  autoaudiosink demux. !  videoconvert   !  videoscale  !  video/x-raw,width=1920 ,height=1080 ,method=1  ! autovideosink " , NULL);
+	//pipeline = gst_parse_launch("appsrc name=vdrsource ! decodebin name=demux demux. ! queue ! audioconvert ! audioresample ! autoaudiosink demux. ! videoconvert ! gdkpixbufoverlay location=logo.png name=overlay !kmssink name=videosink" , NULL);
+pipeline = gst_parse_launch("appsrc name=vdrsource ! decodebin name=demux demux. ! queue ! audioconvert ! audioresample ! autoaudiosink demux. ! videoconvert ! kmssink name=videosink" , NULL);
 
-    
-    pipeline = gst_parse_launch("appsrc name=vdrsource !  decodebin  name=demux  demux.  !  queue  !  audioconvert  !  audioresample  !  autoaudiosink demux. !  videoconvert  !  videoscale  !  video/x-raw,width=1920 ,height=1080 ,method=1  !  autovideosink" , NULL);
-	//pipeline = gst_parse_launch("appsrc name=vdrsource !  decodebin  name=demux  demux.  !  queue  !  audioconvert  !  audioresample  !  autoaudiosink demux. !  videoconvert  !  glimagesink" , NULL);
     if (!pipeline) {
-     isyslog("!pipeline");
+     g_printerr("!pipeline /n");
      return;
     }
-
-
 
     mVdrSrc = gst_bin_get_by_name (GST_BIN(pipeline), "vdrsource");
 
     if (!mVdrSrc) {
       if (pipeline) gst_object_unref (GST_OBJECT (pipeline));
-      isyslog("!mVdrSrc");
+      g_printerr("!mVdrSrc (faild) /n");
       return;
     }
+	else
+	{
+		g_printerr("!mVdrSrc (successful) /n");
+	}
 
-    /* Set the pipeline to "playing" state*/
+	//overlay = gst_element_factory_make ("gdkpixbufoverlay", NULL);
+
+	//g_object_set (overlay, "location", "logo.png", NULL);
+
+	overlay = gst_bin_get_by_name (GST_BIN(pipeline), "overlay");
+	if(!overlay)
+	{
+			g_printerr("!overlay (faild) /n");
+	}
+	else
+	{
+			g_printerr("!overlay (successful) /n");
+	}
+
+
+	video_sink = gst_bin_get_by_name (GST_BIN(pipeline), "videosink");
+	if(!video_sink)
+	{
+			g_printerr("!video_sink (faild) /n");
+	}
+	else
+	{
+			g_printerr("!video_sink (successful) /n");
+	}
+
+	//gst_bin_add_many (GST_BIN (pipeline), overlay, NULL);
+
+	gst_element_link_many (mVdrSrc, overlay, video_sink, NULL);
+
     gst_element_set_state (pipeline, GST_STATE_PLAYING);
 
+}
 }; // end of method
 
+void cGstreamerDevice::SetVolumeDevice(int Volume)
+{
+     if (!pipeline) {
+     g_printerr("!pipeline");
+     return;
+    }
+    else
+     {
+        //g_object_set(pipeline, "volume", Volume, NULL);
+     }
 
+}; // end of method
 
 void cGstreamerDevice::Init()
 {
@@ -151,15 +199,18 @@ void cGstreamerDevice::Init()
     setenv("GST_VAAPI_ALL_DRIVERS", "1", 1);
     
     // Info Debug
-    //setenv("GST_DEBUG", "4", 2);
+    setenv("GST_DEBUG", "4", 2);
 
     // Error Debug
-   setenv("GST_DEBUG", "1", 2);
+   //setenv("GST_DEBUG", "1", 2);
     
    gst_init (NULL, NULL);
 
     // Init gstreamer pipeline
-    Action();
+    //Action();
+
+   // Init keboard Window
+   open_display("");
 
     g_printerr("gstreamer Version %s \n" ,gst_version_string());
 
@@ -167,13 +218,17 @@ void cGstreamerDevice::Init()
 
 cGstreamerDevice::cGstreamerDevice() : cDevice()
 {
+    //mtrace();
 
+    pipeline = NULL;
     Init();
 
 };// end of method
 
 cGstreamerDevice::~cGstreamerDevice()
 {
+    //muntrace() ;
+
     g_printerr("~cGstreamerDevice() \n");
 };// end of method
 
@@ -197,8 +252,9 @@ bool cGstreamerDevice::SetPlayMode(ePlayMode PlayMode)
     {
     case 0:
     {
-            gst_element_set_state (pipeline, GST_STATE_NULL);
 
+            gst_element_set_state (pipeline, GST_STATE_NULL);
+            //gst_element_set_state (pipeline, GST_STATE_READY);
   
 
             if (pipeline) {
@@ -210,6 +266,10 @@ bool cGstreamerDevice::SetPlayMode(ePlayMode PlayMode)
             }
 
 
+         //gst_element_set_locked_state(pipeline, TRUE);
+         //gst_element_set_state(pipeline, GST_STATE_READY);
+         //gst_element_set_state(pipeline, GST_STATE_PAUSED);
+
          g_printerr("SetPlayMode (0)\n");
         break;
     }
@@ -219,7 +279,15 @@ bool cGstreamerDevice::SetPlayMode(ePlayMode PlayMode)
          if(pipeline == NULL)
          {
                 Action();
+                g_printerr("SetPlayMode (1);Action()\n");
          }
+         else
+         {
+
+         //gst_element_set_locked_state(pipeline, FALSE);
+         //gst_element_set_state (pipeline, GST_STATE_PLAYING);
+         }
+
          g_printerr("SetPlayMode (1)\n");
         break;
     }
@@ -293,6 +361,15 @@ int cGstreamerDevice::PlayTs(const uchar *Data, int Length, bool VideoOnly)
 
     gst_buffer_unref (buf);
     
+     if (ret < GST_FLOW_OK) {
+
+        g_printerr("Error sending buffer: %d", ret);
+        gst_buffer_unref (buf);
+        return -1;
+
+    }
+
+
     return Length;
 };// end of method
 
@@ -320,6 +397,7 @@ void cGstreamerDevice::MakePrimaryDevice(bool On)
 {
     if (On) new cGstreamerOsdProvider();
     cDevice::MakePrimaryDevice(On);
+    g_printerr("cGstreamerDevice::MakePrimaryDevice(bool On)\n");
 };// end of method
 
 void cGstreamerDevice::ShowOverlay()
@@ -331,8 +409,8 @@ void cGstreamerDevice::ShowOverlay()
 void cGstreamerDevice::ReplayPlayFile(char* Filename)
 {
 
-    //g_printerr(Filename);
-    //g_printerr("\n");
+    g_printerr(Filename);
+    g_printerr("\n");
     
     gst_element_set_state (pipeline, GST_STATE_NULL);
     
@@ -343,9 +421,7 @@ void cGstreamerDevice::ReplayPlayFile(char* Filename)
         pipeline = NULL;
 
     }
-    
-    pipeline = gst_element_factory_make("playbin", "playbin");
-    
+
     std::string str2 ("http");
     std::string temp = Filename;
     std::size_t found = temp.find(str2);
@@ -355,12 +431,15 @@ void cGstreamerDevice::ReplayPlayFile(char* Filename)
     }
     else
     {
-        local_uri = g_strdup_printf ("file://%s", Filename);
+        local_uri = g_strdup_printf ("filesrc  location=%s ! decodebin  name=demux  demux.  !  queue  !  audioconvert  !  audioresample  !  autoaudiosink demux. !  videoconvert    ! videoscale ! video/x-raw,width=1920,height=1080  ! xvimagesink ", Filename);
     }
     
-    g_object_set(pipeline, "uri", local_uri, NULL);
+     pipeline = gst_parse_launch(local_uri , NULL);
+
+     g_printerr(local_uri);
+     g_printerr("\n");
     
-    gst_element_set_state (pipeline, GST_STATE_PLAYING);
+     gst_element_set_state (pipeline, GST_STATE_PLAYING);
 
     g_printerr("ReplayPlayFile() \n");
 

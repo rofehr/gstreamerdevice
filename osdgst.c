@@ -7,26 +7,25 @@
  */
 #include "osdgst.h"
 
-static Bool WaitForMapNotify(Display *d, XEvent *e, char *arg)
+
+void *cOsdgst::Init(GstElement *overlay)
 {
-    return d && e && arg && (e->type == MapNotify) && (e->xmap.window == *(Window*)arg);
+	m_overlay = overlay;
+	g_printerr("cOsdgst::Init(GstElement *overlay) /n");
 }; // end of method
 
-
-/*
-* Constructor
-*/
+/* * Constructor */
 cOsdgst::cOsdgst(int Left, int Top, uint Level) : cOsd(Left, Top, Level)
 {
 
-}; // end of method
+};// end of method
 
-/*
-* Deconstruktor
-*/
+
 cOsdgst::~cOsdgst()
 {
-    XCloseDisplay(Xdisplay);
+   // XCloseDisplay(Xdisplay);
+   g_object_set (m_overlay, "overlay-height", "1", NULL);
+   g_object_set (m_overlay, "overlay-width", "1", NULL);
 }; // end of method
 
 /*
@@ -34,6 +33,10 @@ cOsdgst::~cOsdgst()
 */
 void *cOsdgst::CreateWindow(Display *dpy)
 {
+
+
+
+/*
     XEvent event;
     int x,y, attr_mask;
     XSizeHints hints;
@@ -64,7 +67,7 @@ void *cOsdgst::CreateWindow(Display *dpy)
        // Xdisplay = dpy;
     }
 
-    
+
 
     Xscreen = DefaultScreen(Xdisplay);
     Xroot = RootWindow(Xdisplay, Xscreen);
@@ -90,41 +93,17 @@ void *cOsdgst::CreateWindow(Display *dpy)
             if(!fbconfig) {
                 g_printerr("No matching FB config found");
             }
-    else
-    {
 
             describe_fbconfig(fbconfig);
-    }
 
-  
-    
-    /* Create a colormap - only needed on some X clients, eg. IRIX */
+    // Create a colormap - only needed on some X clients, eg. IRIX
     cmap = XCreateColormap(Xdisplay, Xroot, osd_visual->visual, AllocNone);
 
     attr.colormap = cmap;
     attr.background_pixmap = None;
     attr.border_pixmap = None;
     attr.border_pixel = 0;
-  
-/*    
-    attr.event_mask =
-        StructureNotifyMask |
-        EnterWindowMask |
-        LeaveWindowMask |
-        ExposureMask |
-        ButtonPressMask |
-        ButtonReleaseMask |
-        OwnerGrabButtonMask |
-        KeyPressMask |
-        KeyReleaseMask;
 
-    attr_mask =
-        CWColormap|
-        CWBorderPixel|
-        CWEventMask;
-        
-        
-*/
 
     attr.event_mask =
         StructureNotifyMask |
@@ -139,7 +118,7 @@ void *cOsdgst::CreateWindow(Display *dpy)
         CWColormap|
         CWBorderPixel|
         CWEventMask;
-    
+
     window_handle = XCreateWindow( Xdisplay, Xroot, 0, 0, 1920, 1080, 0, 32, InputOutput, osd_visual->visual, attr_mask, &attr);
 
 
@@ -147,28 +126,7 @@ void *cOsdgst::CreateWindow(Display *dpy)
         fatalError("Couldn't create the window\n");
     }
 
-/*
-    textprop.value = (unsigned char*)title;
-    textprop.encoding = XA_STRING;
-    textprop.format = 8;
-    textprop.nitems = strlen(title);
 
-    hints.width = osd_width;
-    hints.height = osd_height;
-    hints.flags = USPosition|USSize;
-
-    startup_state = XAllocWMHints();
-    startup_state->initial_state = NormalState;
-    startup_state->flags = StateHint;
-
-    XSetWMProperties(Xdisplay, window_handle,&textprop, &textprop,
-                     NULL, 0,
-                     &hints,
-                     startup_state,
-                     NULL);
-
-    XFree(startup_state);
-*/
     XMapWindow(Xdisplay, window_handle);
     XIfEvent(Xdisplay, &event, WaitForMapNotify, (char*)&window_handle);
 
@@ -197,7 +155,7 @@ void *cOsdgst::CreateWindow(Display *dpy)
 
     xev.xclient.window = window_handle;
 
-    double alpha = 0.8;
+    double alpha = 0.5;
     unsigned long opacity = (unsigned long)(0xFFFFFFFFul * alpha);
     Atom XA_NET_WM_WINDOW_OPACITY = XInternAtom(Xdisplay, "_NET_WM_WINDOW_OPACITY", False);
 
@@ -210,7 +168,7 @@ void *cOsdgst::CreateWindow(Display *dpy)
 
     XFlush(Xdisplay);
 
-
+*/
 }; // end of method
 
 /*
@@ -256,7 +214,7 @@ void cOsdgst::fatalError(const char *why)
 }; // end of method
 
 /*
-* fatalError
+* Debug
 */
 void cOsdgst::Debug(const char *why)
 {
@@ -266,6 +224,7 @@ void cOsdgst::Debug(const char *why)
 /*
 * describe_fbconfig
 */
+/*
 void cOsdgst::describe_fbconfig(GLXFBConfig fbconfig)
 {
     int doublebuffer;
@@ -284,6 +243,7 @@ void cOsdgst::describe_fbconfig(GLXFBConfig fbconfig)
                doublebuffer == True ? "Yes" : "No",
                red_bits, green_bits, blue_bits, alpha_bits, depth_bits);
 }; // end of method
+*/
 
 /*
 * write_png_for_image
@@ -299,7 +259,7 @@ void cOsdgst::write_png_for_image(XImage *image, int width, int height, char *fi
     char buffer[50];
     int n;
 
-    //n = sprintf(buffer, filename);
+    n = sprintf(buffer, filename);
 
 // Open file
     fp = fopen(buffer, "wb");
@@ -390,47 +350,29 @@ void cOsdgst::write_png_for_image(XImage *image, int width, int height, char *fi
 */
 void cOsdgst::FlushOsd(cPixmapMemory *pm)
 {
+/*
     int depth = 32; // works fine with depth = 24
     int bitmap_pad = 32;// 32 for 24 and 32 bpp, 16, for 15&16
     int bytes_per_line = 0;// number of bytes in the client image between the start of one
     unsigned int uiWidth = pm->ViewPort().Width();
     unsigned int uiHeight = pm->ViewPort().Height();
 
-    
+
     unsigned char *image32=(unsigned char *)malloc(uiWidth*uiHeight*4);
 
     XImage *img = XCreateImage(Xdisplay, osd_visual->visual, depth, ZPixmap, 0, (char*)image32, uiWidth, uiHeight, bitmap_pad, bytes_per_line);
 
     img->data = (char*)pm->Data();
 
+
     //Pixmap pixmap = XCreatePixmap(Xdisplay, window_handle, uiWidth*2, uiHeight*2, depth);
 
-    
+
     int X = pm->ViewPort().X();
     int Y = pm->ViewPort().Y();
     int T = Top();
     int L = Left();
-/*
 
-    XPutImage(Xdisplay, pixmap, osd_gc, img, 0, 0, 0, 0, uiWidth, uiHeight);
-
-
-    XCopyArea(Xdisplay, pixmap, window_handle,osd_gc,
-              0 ,0,
-              uiWidth, uiHeight,
-              L+X, T+Y);
-
-*/    
-    
-    
-       //cairo stuff...
-/*
-  cairo_surface_t *surface_dest = cairo_xlib_surface_create( Xdisplay,
-                                                              window_handle, 
-                                                              osd_visual->visual, 
-                                                              uiWidth*32, 
-                                                              uiHeight*32);
-*/
 
   cairo_surface_t *surface_dest = cairo_xlib_surface_create( Xdisplay,
                                                               window_handle, 
@@ -447,36 +389,27 @@ void cOsdgst::FlushOsd(cPixmapMemory *pm)
                                         img->width, 
                                         img->height, 
                                         img->bytes_per_line);
-   
-   /*
-   cairo_scale(cr_dest, ((double)uiWidth / img->width)*2 , ((double)uiHeight /
- img->height)*2 );
-   */
-   double factor =(double) (1920 / img->width);
-   
-   cairo_scale(cr_dest, ((double)uiWidth / img->width)*2 , ((double)uiHeight /
- img->height)*2 );
 
-  
+
+   double factor =(double) (1920 / img->width);
+
+   cairo_scale( cr_dest, ((double)uiWidth / img->width)*2 , ((double)uiHeight /
+                img->height)*2 );
+
+
    cairo_set_source_surface(cr_dest, surface_source, L+X, T+Y);
    cairo_paint(cr_dest);
    cairo_surface_destroy(surface_source);
    cairo_surface_destroy(surface_dest);
-   //cairo_surface_destroy(surface_source);
-    
-    
-    
-    
-    
+
     XFlush(Xdisplay);
     XSync(Xdisplay, true);
-   // XFreePixmap(Xdisplay, pixmap);
-    
 
-    
     DestroyPixmap(pm);
-    //Debug("Flush(void) \n");
+    free(image32);
+
     g_printerr("cOsdgst::FlushOsd(cPixmapMemory *pm) %d ViewPort().Width %d ViewPort().Height\n",pm->ViewPort().Width() ,pm->ViewPort().Height());
+*/
 };// end of method
 
 /*

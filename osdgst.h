@@ -15,9 +15,10 @@
 
 #include <libpng16/png.h>
 
-#include <GL/gl.h>
-#include <GL/glx.h>
-#include <GL/glxext.h>
+//#include <GL/gl.h>
+//#include <GL/glut.h>
+//#include <GL/glx.h>
+//#include <GL/glxext.h>
 
 #include <gst/gst.h>
 
@@ -36,31 +37,17 @@ static Display *Xdisplay;
 static Colormap cmap;
 static XVisualInfo *osd_visual;
 static XRenderPictFormat *pict_format;
-static GLXFBConfig *fbconfigs, fbconfig;
 static int numfbconfigs;
-static GLXContext render_context;
-static GLXWindow glX_window_handle;
 static int osd_width, osd_height;
 static GC osd_gc;
-
-
-static int VisData[] = {
-    GLX_RENDER_TYPE, GLX_RGBA_BIT,
-    GLX_DRAWABLE_TYPE, GLX_WINDOW_BIT,
-    GLX_DOUBLEBUFFER, True,
-    GLX_RED_SIZE, 8,
-    GLX_GREEN_SIZE, 8,
-    GLX_BLUE_SIZE, 8,
-    GLX_ALPHA_SIZE, 8,
-    GLX_DEPTH_SIZE, 16,
-    None
-};
 
 
 class cOsdgst : public cOsd {
 private:
 
     void write_png_for_image(XImage *image, int width, int height, char *filename);
+
+	GstElement *m_overlay;
     
 public:
 
@@ -70,6 +57,8 @@ public:
 
     ~cOsdgst();
 
+    void *Init(GstElement *overlay);
+
     void *CreateWindow(Display *dpy);
 
     int isExtensionSupported(const char * extList, const char *extension);
@@ -78,7 +67,7 @@ public:
 
     void Debug(const char *why);
 
-    void describe_fbconfig(GLXFBConfig fbconfig);
+    //void describe_fbconfig(GLXFBConfig fbconfig);
 
     void FlushOsd(cPixmapMemory *pm);
 
