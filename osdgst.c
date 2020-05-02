@@ -7,7 +7,6 @@
  */
 #include "osdgst.h"
 
-
 void *cOsdgst::Init(GstElement *overlay)
 {
 	m_overlay = overlay;

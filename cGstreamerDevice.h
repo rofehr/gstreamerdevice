@@ -1,8 +1,7 @@
 #include <stdio.h>
-
 #include <stdlib.h>
-
 #include <sys/mman.h>
+
 
 #include <vdr/config.h>
 #include <vdr/device.h>
