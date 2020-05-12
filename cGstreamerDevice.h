@@ -15,7 +15,6 @@
 #include <gst/video/video.h>
 #include <gst/video/videooverlay.h>
 #include <gst/video/video-overlay-composition.h>
-#include <gdk-pixbuf/gdk-pixbuf.h>
 
 #include <X11/Xlib.h>
 #include <X11/extensions/Xcomposite.h>
@@ -58,8 +57,6 @@ static GstElement *overlay = NULL;
 static GstBus *pipebus = NULL;
 static Display *pipedpy = NULL;
 static Window pipewin = 0;
-static GdkPixbuf *logo_pixbuf;
-
     
     
 
