@@ -144,9 +144,10 @@ pipeline = gst_parse_launch("appsrc name=vdrsource ! decodebin name=demux demux.
 		g_printerr("!mVdrSrc (successful) /n");
 	}
 
-	//overlay = gst_element_factory_make ("gdkpixbufoverlay", NULL);
+	/*
+	overlay = gst_element_factory_make ("gdkpixbufoverlay", NULL);
 
-	//g_object_set (overlay, "location", "logo.png", NULL);
+	g_object_set (overlay, "location", "logo.png", NULL);
 
 	overlay = gst_bin_get_by_name (GST_BIN(pipeline), "overlay");
 	if(!overlay)
@@ -157,7 +158,7 @@ pipeline = gst_parse_launch("appsrc name=vdrsource ! decodebin name=demux demux.
 	{
 			g_printerr("!overlay (successful) /n");
 	}
-
+	*/
 
 	video_sink = gst_bin_get_by_name (GST_BIN(pipeline), "videosink");
 	if(!video_sink)
@@ -168,11 +169,13 @@ pipeline = gst_parse_launch("appsrc name=vdrsource ! decodebin name=demux demux.
 	{
 			g_printerr("!video_sink (successful) /n");
 	}
-
-	//gst_bin_add_many (GST_BIN (pipeline), overlay, NULL);
+	
+	/*
+	gst_bin_add_many (GST_BIN (pipeline), overlay, NULL);
 
 	gst_element_link_many (mVdrSrc, overlay, video_sink, NULL);
-
+	*/
+	
     gst_element_set_state (pipeline, GST_STATE_PLAYING);
 
 }
