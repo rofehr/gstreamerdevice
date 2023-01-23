@@ -128,7 +128,7 @@ if (!pipeline)
 pipeline = gst_parse_launch("appsrc name=vdrsource ! decodebin name=demux demux. ! queue ! audioconvert ! audioresample ! autoaudiosink demux. ! videoconvert ! autovideosink name=videosink" , NULL);
 
     if (!pipeline) {
-     g_printerr("!pipeline /n");
+     g_printerr("!pipeline \n");
      return;
     }
 
@@ -136,20 +136,20 @@ pipeline = gst_parse_launch("appsrc name=vdrsource ! decodebin name=demux demux.
 
     if (!mVdrSrc) {
       if (pipeline) gst_object_unref (GST_OBJECT (pipeline));
-      g_printerr("!mVdrSrc (faild) /n");
+      g_printerr("!mVdrSrc (faild) \n");
       return;
     }
 	else
 	{
-		g_printerr("!mVdrSrc (successful) /n");
+		g_printerr("!mVdrSrc (successful) \n");
 	}
 
 	/*
 	overlay = gst_element_factory_make ("gdkpixbufoverlay", NULL);
 
-	//g_object_set (overlay, "location", "logo.png", NULL);
+	g_object_set (overlay, "location", "logo.png", NULL);
 
-	//overlay = gst_bin_get_by_name (GST_BIN(pipeline), "overlay");
+	overlay = gst_bin_get_by_name (GST_BIN(pipeline), "overlay");
 	if(!overlay)
 	{
 			g_printerr("!overlay (faild) /n");
@@ -205,7 +205,7 @@ void cGstreamerDevice::Init()
     //setenv("GST_DEBUG", "4", 2);
 
     // Error Debug
-     setenv("GST_DEBUG", "1", 2);
+     setenv("GST_DEBUG", "3", 2);
     
    gst_init (NULL, NULL);
 
