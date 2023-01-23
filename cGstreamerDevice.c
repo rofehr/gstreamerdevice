@@ -144,7 +144,7 @@ pipeline = gst_parse_launch("appsrc name=vdrsource ! decodebin name=demux demux.
 		g_printerr("!mVdrSrc (successful) /n");
 	}
 
-	
+	/*
 	overlay = gst_element_factory_make ("gdkpixbufoverlay", NULL);
 
 	//g_object_set (overlay, "location", "logo.png", NULL);
@@ -158,7 +158,7 @@ pipeline = gst_parse_launch("appsrc name=vdrsource ! decodebin name=demux demux.
 	{
 			g_printerr("!overlay (successful) /n");
 	}
-	
+	*/
 
 	video_sink = gst_bin_get_by_name (GST_BIN(pipeline), "videosink");
 	if(!video_sink)
