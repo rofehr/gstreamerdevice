@@ -125,7 +125,7 @@ if (!pipeline)
 {
 //     pipeline = gst_parse_launch("appsrc name=vdrsource !  decodebin  name=demux  demux.  !  queue  !  audioconvert  !  audioresample  !  autoaudiosink demux. !  videoconvert   !  videoscale  !  video/x-raw,width=1920 ,height=1080 ,method=1  ! autovideosink " , NULL);
 	//pipeline = gst_parse_launch("appsrc name=vdrsource ! decodebin name=demux demux. ! queue ! audioconvert ! audioresample ! autoaudiosink demux. ! videoconvert ! gdkpixbufoverlay location=logo.png name=overlay !kmssink name=videosink" , NULL);
-pipeline = gst_parse_launch("appsrc name=vdrsource ! decodebin name=demux demux. ! queue ! audioconvert ! audioresample ! autoaudiosink demux. ! videoconvert ! kmssink name=videosink" , NULL);
+pipeline = gst_parse_launch("appsrc name=vdrsource ! decodebin name=demux demux. ! queue ! audioconvert ! audioresample ! autoaudiosink demux. ! videoconvert ! autovideosink name=videosink" , NULL);
 
     if (!pipeline) {
      g_printerr("!pipeline /n");
@@ -144,12 +144,12 @@ pipeline = gst_parse_launch("appsrc name=vdrsource ! decodebin name=demux demux.
 		g_printerr("!mVdrSrc (successful) /n");
 	}
 
-	/*
+	
 	overlay = gst_element_factory_make ("gdkpixbufoverlay", NULL);
 
-	g_object_set (overlay, "location", "logo.png", NULL);
+	//g_object_set (overlay, "location", "logo.png", NULL);
 
-	overlay = gst_bin_get_by_name (GST_BIN(pipeline), "overlay");
+	//overlay = gst_bin_get_by_name (GST_BIN(pipeline), "overlay");
 	if(!overlay)
 	{
 			g_printerr("!overlay (faild) /n");
@@ -158,7 +158,7 @@ pipeline = gst_parse_launch("appsrc name=vdrsource ! decodebin name=demux demux.
 	{
 			g_printerr("!overlay (successful) /n");
 	}
-	*/
+	
 
 	video_sink = gst_bin_get_by_name (GST_BIN(pipeline), "videosink");
 	if(!video_sink)
@@ -210,7 +210,7 @@ void cGstreamerDevice::Init()
    gst_init (NULL, NULL);
 
     // Init gstreamer pipeline
-    //Action();
+    Action();
 
    // Init keboard Window
    open_display("");
