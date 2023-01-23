@@ -202,10 +202,10 @@ void cGstreamerDevice::Init()
     setenv("GST_VAAPI_ALL_DRIVERS", "1", 1);
     
     // Info Debug
-    setenv("GST_DEBUG", "4", 2);
+    //setenv("GST_DEBUG", "4", 2);
 
     // Error Debug
-   //setenv("GST_DEBUG", "1", 2);
+     setenv("GST_DEBUG", "1", 2);
     
    gst_init (NULL, NULL);
 
